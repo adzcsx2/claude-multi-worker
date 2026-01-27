@@ -1,8 +1,8 @@
 """
-i18n - Internationalization support for CCB
+i18n - Internationalization support for CMS
 
 Language detection priority:
-1. CCB_LANG environment variable (zh/en/auto)
+1. CMS_LANG environment variable (zh/en/auto)
 2. System locale (LANG/LC_ALL/LC_MESSAGES)
 3. Default to English
 """
@@ -19,8 +19,8 @@ MESSAGES = {
         "solutions": "Solutions:",
         "install_wezterm": "Install WezTerm (recommended): https://wezfurlong.org/wezterm/",
         "or_install_tmux": "Or install tmux",
-        "tmux_installed_not_inside": "tmux is installed, but you're not inside a tmux session (run `tmux` first, then run `ccb` inside tmux)",
-        "or_set_ccb_terminal": "Or set CCB_TERMINAL=wezterm and configure CODEX_WEZTERM_BIN",
+        "tmux_installed_not_inside": "tmux is installed, but you're not inside a tmux session (run `tmux` first, then run `cms` inside tmux)",
+        "or_set_cms_terminal": "Or set CMS_TERMINAL=wezterm and configure CODEX_WEZTERM_BIN",
         "tmux_not_installed": "tmux not installed and WezTerm unavailable",
         "install_wezterm_or_tmux": "Solution: Install WezTerm (recommended) or tmux",
         "creating_tmux_session": "Creating tmux session: {session}",
@@ -52,7 +52,7 @@ MESSAGES = {
         "cleanup_complete": "Cleanup complete",
 
         # Banner
-        "banner_title": "Claude Code Bridge {version}",
+        "banner_title": "Claude Multi Starter {version}",
         "banner_date": "{date}",
         "banner_backends": "Backends: {backends}",
 
@@ -94,8 +94,8 @@ MESSAGES = {
         "solutions": "解决方案：",
         "install_wezterm": "安装 WezTerm (推荐): https://wezfurlong.org/wezterm/",
         "or_install_tmux": "或安装 tmux",
-        "tmux_installed_not_inside": "已安装 tmux，但当前不在 tmux 会话中（请先运行 `tmux`，再在 tmux 内执行 `ccb`）",
-        "or_set_ccb_terminal": "或设置 CCB_TERMINAL=wezterm 并配置 CODEX_WEZTERM_BIN",
+        "tmux_installed_not_inside": "已安装 tmux，但当前不在 tmux 会话中（请先运行 `tmux`，再在 tmux 内执行 `cms`）",
+        "or_set_cms_terminal": "或设置 CMS_TERMINAL=wezterm 并配置 CODEX_WEZTERM_BIN",
         "tmux_not_installed": "tmux 未安装且 WezTerm 不可用",
         "install_wezterm_or_tmux": "解决方案：安装 WezTerm (推荐) 或 tmux",
         "creating_tmux_session": "正在创建 tmux 会话: {session}",
@@ -127,7 +127,7 @@ MESSAGES = {
         "cleanup_complete": "清理完成",
 
         # Banner
-        "banner_title": "Claude Code Bridge {version}",
+        "banner_title": "Claude Multi Starter {version}",
         "banner_date": "{date}",
         "banner_backends": "后端: {backends}",
 
@@ -170,15 +170,15 @@ def detect_language() -> str:
     """Detect language from environment.
 
     Priority:
-    1. CCB_LANG environment variable (zh/en/auto)
+    1. CMS_LANG environment variable (zh/en/auto)
     2. System locale
     3. Default to English
     """
-    ccb_lang = os.environ.get("CCB_LANG", "auto").lower()
+    cms_lang = os.environ.get("CMS_LANG", "auto").lower()
 
-    if ccb_lang in ("zh", "cn", "chinese"):
+    if cms_lang in ("zh", "cn", "chinese"):
         return "zh"
-    if ccb_lang in ("en", "english"):
+    if cms_lang in ("en", "english"):
         return "en"
 
     # Auto-detect from system locale

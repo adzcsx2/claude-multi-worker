@@ -31,57 +31,57 @@ class ClaudeInstanceSpec:
     instance_id: str
     role: str = ""
     session_filename: str = ".claude-session"
-    daemon_key: str = "laskd"
-    protocol_prefix: str = "lask"
+    daemon_key: str = "claude"
+    protocol_prefix: str = "cms"
 
     @property
     def state_file_name(self) -> str:
         """Instance-specific state file"""
         if self.instance_id == "default":
-            return "laskd.json"
-        return f"laskd_{self.instance_id}.json"
+            return "claude.json"
+        return f"claude_{self.instance_id}.json"
 
     @property
     def log_file_name(self) -> str:
         """Instance-specific log file"""
         if self.instance_id == "default":
-            return "laskd.log"
-        return f"laskd_{self.instance_id}.log"
+            return "claude.log"
+        return f"claude_{self.instance_id}.log"
 
     @property
     def lock_name(self) -> str:
         """Instance-specific lock name"""
         if self.instance_id == "default":
-            return "laskd"
-        return f"laskd_{self.instance_id}"
+            return "claude"
+        return f"claude_{self.instance_id}"
 
     @property
     def idle_timeout_env(self) -> str:
         """Instance-specific idle timeout env var"""
         if self.instance_id == "default":
-            return "CCB_LASKD_IDLE_TIMEOUT_S"
-        return f"CCB_LASKD_{self.instance_id.upper()}_IDLE_TIMEOUT_S"
+            return "CMS_CLAUDE_IDLE_TIMEOUT_S"
+        return f"CMS_CLAUDE_{self.instance_id.upper()}_IDLE_TIMEOUT_S"
 
     @property
     def enabled_env(self) -> str:
         """Instance-specific enabled env var"""
         if self.instance_id == "default":
-            return "CCB_LASKD"
-        return f"CCB_LASKD_{self.instance_id.upper()}"
+            return "CMS_CLAUDE"
+        return f"CMS_CLAUDE_{self.instance_id.upper()}"
 
     @property
     def autostart_env_primary(self) -> str:
         """Instance-specific autostart env var"""
         if self.instance_id == "default":
-            return "CCB_LASKD_AUTOSTART"
-        return f"CCB_LASKD_{self.instance_id.upper()}_AUTOSTART"
+            return "CMS_CLAUDE_AUTOSTART"
+        return f"CMS_CLAUDE_{self.instance_id.upper()}_AUTOSTART"
 
     @property
     def state_file_env(self) -> str:
         """Instance-specific state file env var"""
         if self.instance_id == "default":
-            return "CCB_LASKD_STATE_FILE"
-        return f"CCB_LASKD_{self.instance_id.upper()}_STATE_FILE"
+            return "CMS_CLAUDE_STATE_FILE"
+        return f"CMS_CLAUDE_{self.instance_id.upper()}_STATE_FILE"
 
 
 # Global registry of Claude instances
@@ -123,28 +123,6 @@ def is_claude_instance(instance_id: str) -> bool:
     return instance_id in _CLAUDE_INSTANCES
 
 
-LASKD_SPEC = ProviderDaemonSpec(
-    daemon_key="laskd",
-    protocol_prefix="lask",
-    state_file_name="laskd.json",
-    log_file_name="laskd.log",
-    idle_timeout_env="CCB_LASKD_IDLE_TIMEOUT_S",
-    lock_name="laskd",
-)
-
-
-LASK_CLIENT_SPEC = ProviderClientSpec(
-    protocol_prefix="lask",
-    enabled_env="CCB_LASKD",
-    autostart_env_primary="CCB_LASKD_AUTOSTART",
-    autostart_env_legacy="CCB_AUTO_LASKD",
-    state_file_env="CCB_LASKD_STATE_FILE",
-    session_filename=".claude-session",
-    daemon_bin_name="laskd",
-    daemon_module="laskd_daemon",
-)
-
-
 # Auto-load Claude instances from config files
 def _auto_load_claude_instances():
     """Automatically load Claude instances from config files"""
@@ -153,8 +131,8 @@ def _auto_load_claude_instances():
         from pathlib import Path
 
         config_paths = [
-            Path.cwd() / ".ccb_config" / "ccb.config",
-            Path.home() / ".ccb" / "ccb.config"
+            Path.cwd() / ".cms_config" / "cms.config",
+            Path.home() / ".cms" / "cms.config"
         ]
 
         for config_path in config_paths:

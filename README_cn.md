@@ -1,4 +1,4 @@
-# CCB - Claude Code Bridge
+# CMS - Claude Multi Starter
 
 [English](README.md)
 
@@ -9,7 +9,7 @@
 - **一键启动** - 单条命令自动创建多个 Claude 实例
 - **独立窗口** - 每个实例在独立的终端窗口中运行，标题清晰标识
 - **实例间通信** - 使用 `send` 命令在实例间即时发送消息
-- **动态配置** - 通过 `.ccb_config/ccb.config` 自定义实例数量和角色
+- **动态配置** - 通过 `.cms_config/cms.config` 自定义实例数量和角色
 - **自动映射** - 启动时自动检测并保存窗格 ID 映射
 - **基于角色的会话** - 每个实例维护独立的会话文件，上下文隔离
 
@@ -24,13 +24,13 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/your-username/claude_code_bridge.git
-cd claude_code_bridge
+git clone https://github.com/your-username/claude-multi-starter.git
+cd claude-multi-starter
 ```
 
 ### 2. 配置实例
 
-编辑 `.ccb_config/ccb.config` 定义实例：
+编辑 `.cms_config/cms.config` 定义实例：
 
 ```json
 {
@@ -56,7 +56,7 @@ cd claude_code_bridge
 运行启动脚本：
 
 ```bash
-./start-ccb.sh
+./start-cms.sh
 # 或在 Windows 上
 start-dynamic.py
 ```
@@ -64,8 +64,8 @@ start-dynamic.py
 脚本将：
 1. 为每个实例创建独立窗口
 2. 设置窗口标题为实例名称
-3. 在每个窗口中自动启动 CCB
-4. 保存窗格映射到 `.ccb_config/pane_mapping.json`
+3. 在每个窗口中自动启动 CMS
+4. 保存窗格映射到 `.cms_config/pane_mapping.json`
 
 ## 使用方法
 
@@ -105,18 +105,18 @@ send test "功能已实现，请开始测试"
 ## 项目结构
 
 ```
-claude_code_bridge/
-├── .ccb_config/
-│   ├── ccb.config           # 实例配置
+claude-multi-starter/
+├── .cms_config/
+│   ├── cms.config           # 实例配置
 │   ├── pane_mapping.json    # 窗格 ID 映射（自动生成）
 │   └── .claude-*-session    # 各实例会话文件
 ├── bin/
 │   ├── send                 # 实例间消息命令
 │   ├── ask                  # 异步任务命令
-│   └── ...                  # 其他 CCB 工具
+│   └── ...                  # 其他 CMS 工具
 ├── lib/                     # Python 库文件
-├── skills/                  # CCB 技能
-├── start-ccb.sh             # Unix 启动脚本
+├── skills/                  # CMS 技能
+├── start-cms.sh             # Unix 启动脚本
 ├── start-dynamic.py         # Python 启动脚本
 ├── install.sh               # 安装脚本
 └── README.md
@@ -126,7 +126,7 @@ claude_code_bridge/
 
 ### 实例配置
 
-`ccb.config` 中每个实例包含：
+`cms.config` 中每个实例包含：
 
 - `id` - 实例标识符（用于 `send` 命令）
 - `role` - 实例的角色描述
@@ -137,7 +137,7 @@ claude_code_bridge/
 
 ### 窗格映射
 
-启动时自动生成 `.ccb_config/pane_mapping.json`：
+启动时自动生成 `.cms_config/pane_mapping.json`：
 
 ```json
 {
@@ -154,7 +154,7 @@ claude_code_bridge/
 
 ### 自定义实例
 
-在 `ccb.config` 中添加或删除实例：
+在 `cms.config` 中添加或删除实例：
 
 ```json
 {
@@ -172,7 +172,7 @@ claude_code_bridge/
 查看映射文件：
 
 ```bash
-cat .ccb_config/pane_mapping.json
+cat .cms_config/pane_mapping.json
 ```
 
 手动测试消息发送：
@@ -186,15 +186,15 @@ wezterm cli send-text --pane-id <PANE_ID> --no-paste "测试消息"
 
 ```bash
 # 启动所有配置的实例
-ccb claude
+cms claude
 
 # 启动特定实例
-ccb claude:ui,coder,test
+cms claude:ui,coder,test
 ```
 
 ## 架构说明
 
-CCB 使用多守护进程架构，每个 Claude 实例：
+CMS 使用多守护进程架构，每个 Claude 实例：
 - 运行独立的守护进程（`laskd`）
 - 维护独立的会话文件
 - 拥有隔离的状态和上下文
@@ -212,19 +212,19 @@ CCB 使用多守护进程架构，每个 Claude 实例：
 
 ### 实例未收到消息
 
-1. 检查 `.ccb_config/pane_mapping.json` 是否存在
-2. 重新运行 `start-ccb.sh` 刷新映射
+1. 检查 `.cms_config/pane_mapping.json` 是否存在
+2. 重新运行 `start-cms.sh` 刷新映射
 3. 确认在 WezTerm 环境中运行
 
 ### 启动失败
 
 1. 确保已安装 WezTerm 并在 PATH 中
-2. 验证 `.ccb_config/ccb.config` JSON 格式正确
+2. 验证 `.cms_config/cms.config` JSON 格式正确
 3. 查看错误信息，确认 Python 版本 >= 3.8
 
 ### JSON 配置错误
 
-确保 `ccb.config` 中：
+确保 `cms.config` 中：
 - 最后一个数组元素后没有逗号
 - 所有引号正确匹配
 - 使用 JSON 验证器检查语法

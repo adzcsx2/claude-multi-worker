@@ -8,16 +8,16 @@ from pathlib import Path
 from typing import Optional, Dict, Any, Iterable
 
 from cli_output import atomic_write_text
-from project_id import compute_ccb_project_id
+from project_id import compute_cms_project_id
 from terminal import get_backend_for_session
 
-REGISTRY_PREFIX = "ccb-session-"
+REGISTRY_PREFIX = "cms-session-"
 REGISTRY_SUFFIX = ".json"
 REGISTRY_TTL_SECONDS = 7 * 24 * 60 * 60
 
 
 def _debug_enabled() -> bool:
-    return os.environ.get("CCB_DEBUG") in ("1", "true", "yes")
+    return os.environ.get("CMS_DEBUG") in ("1", "true", "yes")
 
 
 def _debug(message: str) -> None:
@@ -27,7 +27,7 @@ def _debug(message: str) -> None:
 
 
 def _registry_dir() -> Path:
-    return Path.home() / ".ccb" / "run"
+    return Path.home() / ".cms" / "run"
 
 
 def registry_path_for_session(session_id: str) -> Path:
@@ -213,13 +213,13 @@ def load_registry_by_claude_pane(pane_id: str) -> Optional[Dict[str, Any]]:
     return best
 
 
-def load_registry_by_project_id(ccb_project_id: str, provider: str) -> Optional[Dict[str, Any]]:
+def load_registry_by_project_id(cms_project_id: str, provider: str) -> Optional[Dict[str, Any]]:
     """
-    Load the newest alive registry record matching `{ccb_project_id, provider}`.
+    Load the newest alive registry record matching `{cms_project_id, provider}`.
 
     This enforces directory isolation and avoids parent-directory pollution.
     """
-    proj = (ccb_project_id or "").strip()
+    proj = (cms_project_id or "").strip()
     prov = (provider or "").strip().lower()
     if not proj or not prov:
         return None
@@ -236,14 +236,14 @@ def load_registry_by_project_id(ccb_project_id: str, provider: str) -> Optional[
         if _is_stale(updated_at):
             continue
 
-        existing = (data.get("ccb_project_id") or "").strip()
+        existing = (data.get("cms_project_id") or "").strip()
         inferred = ""
         if not existing:
             # Back-compat: infer from work_dir (no side effects while scanning).
             wd = (data.get("work_dir") or "").strip()
             if wd:
                 try:
-                    inferred = compute_ccb_project_id(Path(wd))
+                    inferred = compute_cms_project_id(Path(wd))
                 except Exception:
                     inferred = ""
         effective = existing or inferred
@@ -261,12 +261,12 @@ def load_registry_by_project_id(ccb_project_id: str, provider: str) -> Optional[
             best_needs_migration = (not existing) and bool(inferred)
 
     if best and best_needs_migration:
-        # Best-effort persistence: update only the winning record to include ccb_project_id.
+        # Best-effort persistence: update only the winning record to include cms_project_id.
         try:
-            if not (best.get("ccb_project_id") or "").strip():
+            if not (best.get("cms_project_id") or "").strip():
                 wd = (best.get("work_dir") or "").strip()
                 if wd:
-                    best["ccb_project_id"] = compute_ccb_project_id(Path(wd))
+                    best["cms_project_id"] = compute_cms_project_id(Path(wd))
                     upsert_registry(best)
         except Exception:
             pass
@@ -275,9 +275,9 @@ def load_registry_by_project_id(ccb_project_id: str, provider: str) -> Optional[
 
 
 def upsert_registry(record: Dict[str, Any]) -> bool:
-    session_id = record.get("ccb_session_id")
+    session_id = record.get("cms_session_id")
     if not session_id:
-        _debug("Registry update skipped: missing ccb_session_id")
+        _debug("Registry update skipped: missing cms_session_id")
         return False
     path = registry_path_for_session(str(session_id))
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -335,12 +335,12 @@ def upsert_registry(record: Dict[str, Any]) -> bool:
 
     data["providers"] = providers
 
-    # Ensure ccb_project_id exists (best-effort from work_dir).
-    if not (data.get("ccb_project_id") or "").strip():
+    # Ensure cms_project_id exists (best-effort from work_dir).
+    if not (data.get("cms_project_id") or "").strip():
         wd = (data.get("work_dir") or "").strip()
         if wd:
             try:
-                data["ccb_project_id"] = compute_ccb_project_id(Path(wd))
+                data["cms_project_id"] = compute_cms_project_id(Path(wd))
             except Exception:
                 pass
 

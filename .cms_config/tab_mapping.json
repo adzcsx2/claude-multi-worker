@@ -1,0 +1,26 @@
+{
+  "work_dir": "E:\\ai_project\\claude-multi-starter",
+  "tabs": {
+    "ui": {
+      "pane_id": "10",
+      "role": "UI/UX designer"
+    },
+    "coder": {
+      "pane_id": "12",
+      "role": "developer"
+    },
+    "test": {
+      "pane_id": "13",
+      "role": "QA engineer"
+    },
+    "aa": {
+      "pane_id": "14",
+      "role": "Assistant (aa)"
+    },
+    "bb": {
+      "pane_id": "15",
+      "role": "Assistant (bb)"
+    }
+  },
+  "created_at": 1769526268.745855
+}

@@ -1,5 +1,5 @@
 """
-Multi-Instance Layout Manager for CCB
+Multi-Instance Layout Manager for CMS
 
 Handles grid layout calculation for multiple Claude instances.
 Supports adaptive layouts: 2x2, 3x2, 4x2, etc.

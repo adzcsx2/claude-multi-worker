@@ -14,12 +14,25 @@ import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-from ccb_config import apply_backend_env
-from ccb_protocol import is_done_text, make_req_id, strip_done_text
-from laskd_protocol import wrap_claude_prompt
+from cms_config import apply_backend_env
+from cms_protocol import REQ_ID_PREFIX, DONE_PREFIX, is_done_text, make_req_id, strip_done_text
 from claude_session_resolver import resolve_claude_session
+
+
+# Local implementation of wrap_claude_prompt (originally from laskd_protocol.py)
+def wrap_claude_prompt(message: str, req_id: str) -> str:
+    """Wrap Claude message with request ID and completion marker."""
+    message = (message or "").rstrip()
+    return (
+        f"{REQ_ID_PREFIX} {req_id}\n\n"
+        f"{message}\n\n"
+        "IMPORTANT:\n"
+        "- Reply normally, in English.\n"
+        "- End your reply with this exact final line (verbatim, on its own line):\n"
+        f"{DONE_PREFIX} {req_id}\n"
+    )
 from pane_registry import upsert_registry
-from project_id import compute_ccb_project_id
+from project_id import compute_cms_project_id
 from session_utils import safe_write_session
 from terminal import get_backend_for_session, get_pane_id_from_session
 
@@ -577,7 +590,7 @@ class ClaudeCommunicator:
     def __init__(self, lazy_init: bool = False):
         self.session_info = self._load_session_info()
         if not self.session_info:
-            raise RuntimeError("❌ No active Claude session found. Run 'ccb claude' (or add claude to ccb.config) first")
+            raise RuntimeError("❌ No active Claude session found. Run 'cms claude' (or add claude to cms.config) first")
 
         self.session_id = str(
             self.session_info.get("claude_session_id") or self.session_info.get("session_id") or ""
@@ -585,7 +598,7 @@ class ClaudeCommunicator:
         self.terminal = self.session_info.get("terminal", "tmux")
         self.pane_id = get_pane_id_from_session(self.session_info) or ""
         self.backend = get_backend_for_session(self.session_info)
-        self.timeout = int(os.environ.get("CLAUDE_SYNC_TIMEOUT", os.environ.get("CCB_SYNC_TIMEOUT", "3600")))
+        self.timeout = int(os.environ.get("CLAUDE_SYNC_TIMEOUT", os.environ.get("CMS_SYNC_TIMEOUT", "3600")))
         self.marker_prefix = "lask"
         self.project_session_file = self.session_info.get("_session_file")
 
@@ -598,7 +611,7 @@ class ClaudeCommunicator:
             self._ensure_log_reader()
             healthy, msg = self._check_session_health()
             if not healthy:
-                raise RuntimeError(f"❌ Session unhealthy: {msg}\nHint: run ccb claude (or add claude to ccb.config) to start a new session")
+                raise RuntimeError(f"❌ Session unhealthy: {msg}\nHint: run cms claude (or add claude to cms.config) to start a new session")
 
     @property
     def log_reader(self) -> ClaudeLogReader:
@@ -691,16 +704,16 @@ class ClaudeCommunicator:
 
     def _publish_registry(self) -> None:
         try:
-            ccb_session_id = (self.session_info.get("ccb_session_id") or os.environ.get("CCB_SESSION_ID") or "").strip()
-            if not ccb_session_id:
+            cms_session_id = (self.session_info.get("cms_session_id") or os.environ.get("CMS_SESSION_ID") or "").strip()
+            if not cms_session_id:
                 return
             wd = self.session_info.get("work_dir")
             work_dir = Path(wd) if isinstance(wd, str) and wd else Path.cwd()
-            ccb_pid = compute_ccb_project_id(work_dir)
+            ccb_pid = compute_cms_project_id(work_dir)
             upsert_registry(
                 {
-                    "ccb_session_id": ccb_session_id,
-                    "ccb_project_id": ccb_pid or None,
+                    "cms_session_id": cms_session_id,
+                    "cms_project_id": ccb_pid or None,
                     "work_dir": str(work_dir),
                     "terminal": self.terminal,
                     "providers": {

@@ -24,7 +24,7 @@ def decode_stdin_bytes(data: bytes) -> str:
       4) Windows fallback: mbcs (ANSI code page).
       5) Last resort: UTF-8 with replacement.
 
-    Users can override via CCB_STDIN_ENCODING.
+    Users can override via CMS_STDIN_ENCODING.
     """
     if not data:
         return ""
@@ -37,7 +37,7 @@ def decode_stdin_bytes(data: bytes) -> str:
     if data.startswith(b"\xfe\xff"):
         return data[2:].decode("utf-16be", errors="strict")
 
-    forced = (os.environ.get("CCB_STDIN_ENCODING") or "").strip()
+    forced = (os.environ.get("CMS_STDIN_ENCODING") or "").strip()
     if forced:
         try:
             return data.decode(forced, errors="strict")

@@ -1,4 +1,4 @@
-﻿# CCB 多实例启动 - 快速设置指南
+﻿# CMS 多实例启动 - 快速设置指南
 
 ## 新电脑设置步骤
 
@@ -6,7 +6,7 @@
 
 - **Python 3.8+**: [下载地址](https://www.python.org/downloads/)
 - **WezTerm**: [下载地址](https://wezfurlong.org/wezterm/installation.html)
-- **CCB (Claude Code Bridge)**: 需要先安装ccb工具
+- **CMS (Claude Multi Starter)**: 需要先安装cms工具
 
 ### 2. 安装Skills
 
@@ -20,7 +20,7 @@
 
 ### 3. 配置实例
 
-编辑 `.ccb_config/ccb.config` 文件，根据需要添加或删除实例：
+编辑 `.cms_config/cms.config` 文件，根据需要添加或删除实例：
 
 ```json
 {
@@ -48,13 +48,13 @@ start.bat
 脚本会自动：
 - 创建网格布局（根据实例数量）
 - 在每个pane显示角色标签
-- 启动对应的ccb实例
+- 启动对应的cms实例
 
 ## 使用
 
 ### 发送消息到其他实例
 
-在任意CCB实例中使用send命令：
+在任意CMS实例中使用send命令：
 
 ```
 send ui "请帮我设计这个界面"
@@ -76,7 +76,7 @@ Pane ID按照配置文件中的instances数组顺序映射：
 - `send_dynamic.py` - 发送消息到指定实例
 - `send_to_pane.py` - 底层WezTerm pane通信
 - `install-skills.ps1` - Skills自动安装脚本
-- `.ccb_config/ccb.config` - 实例配置文件
+- `.cms_config/cms.config` - 实例配置文件
 
 ## 故障排除
 
@@ -84,7 +84,7 @@ Pane ID按照配置文件中的instances数组顺序映射：
 
 1. 确认已运行 `install-skills.bat`
 2. 检查 `~/.claude/skills/send/` 目录是否存在
-3. 重启CCB实例
+3. 重启CMS实例
 
 ### 发送消息失败
 
@@ -95,7 +95,7 @@ Pane ID按照配置文件中的instances数组顺序映射：
 ### 布局混乱
 
 1. 关闭所有pane重新启动
-2. 检查 `.ccb_config/ccb.config` 配置是否正确
+2. 检查 `.cms_config/cms.config` 配置是否正确
 3. 实例数量不要超过12个
 
 ## 项目迁移

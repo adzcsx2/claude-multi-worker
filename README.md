@@ -1,20 +1,20 @@
-# CCB Multi-Instance Launcher
+# CMS Multi-Instance Launcher
 
-一键启动多个 Claude Code Bridge 实例，实现多个 AI 助手的协同工作。基于 WezTerm，每个实例独立窗口，支持实例间快速消息传递。
+一键启动多个 Claude Multi Starter 实例，实现多个 AI 助手的协同工作。基于 WezTerm，每个实例独立窗口，支持实例间快速消息传递。
 
 ## ✨ 特性
 
 - 🚀 **一键启动** - 运行 `start.bat` 自动创建多个 Claude 实例
 - 🪟 **独立窗口** - 每个实例独立窗口，标题显示实例名
 - 💬 **快速通信** - `send` 命令实现实例间即时消息传递
-- ⚙️ **动态配置** - 通过 `.ccb_config/ccb.config` 自定义实例数量和角色
+- ⚙️ **动态配置** - 通过 `.cms_config/cms.config` 自定义实例数量和角色
 - 🎯 **自动映射** - 启动时自动检测并保存 pane ID 映射
 
 ## 🔧 环境要求
 
 - **Python 3.8+**
 - **WezTerm** - [下载安装](https://wezfurlong.org/wezterm/installation.html)
-- **CCB (Claude Code Bridge)** - Claude 命令行工具
+- **CMS (Claude Multi Starter)** - Claude 命令行工具
 
 ## 📦 快速开始
 
@@ -27,7 +27,7 @@ cd claude_code_bridge
 
 ### 2. 配置实例
 
-编辑 `.ccb_config/ccb.config` 文件：
+编辑 `.cms_config/cms.config` 文件：
 
 ```json
 {
@@ -55,8 +55,8 @@ start.bat
 脚本会：
 1. 为每个实例创建独立窗口
 2. 设置窗口标题为实例名
-3. 自动启动 CCB
-4. 保存 pane 映射到 `.ccb_config/pane_mapping.json`
+3. 自动启动 CMS
+4. 保存 pane 映射到 `.cms_config/pane_mapping.json`
 
 ## 📡 实例间通信
 
@@ -90,15 +90,15 @@ send test "功能已实现，请开始测试"
 
 ```
 claude_code_bridge/
-├── .ccb_config/
-│   ├── ccb.config           # 实例配置
+├── .cms_config/
+│   ├── cms.config           # 实例配置
 │   └── pane_mapping.json    # Pane ID 映射（自动生成）
 ├── bin/
 │   ├── send                 # 实例间消息命令
 │   ├── ask                  # 异步任务命令
-│   └── ...                  # 其他 CCB 命令
+│   └── ...                  # 其他 CMS 命令
 ├── lib/                     # Python 库文件
-├── skills/                  # CCB Skills
+├── skills/                  # CMS Skills
 ├── start-dynamic.py         # 动态启动脚本
 ├── start.bat                # Windows 启动入口
 ├── install-skills.ps1       # Skills 安装脚本（可选）
@@ -119,7 +119,7 @@ claude_code_bridge/
 
 ### Pane 映射
 
-启动时自动生成 `.ccb_config/pane_mapping.json`：
+启动时自动生成 `.cms_config/pane_mapping.json`：
 
 ```json
 {
@@ -136,7 +136,7 @@ claude_code_bridge/
 
 ### 自定义实例数量
 
-在 `ccb.config` 中添加或删除 instances 数组项：
+在 `cms.config` 中添加或删除 instances 数组项：
 
 ```json
 {
@@ -154,7 +154,7 @@ claude_code_bridge/
 查看映射文件：
 
 ```bash
-cat .ccb_config/pane_mapping.json
+cat .cms_config/pane_mapping.json
 ```
 
 手动测试发送：
@@ -168,19 +168,19 @@ wezterm cli send-text --pane-id <PANE_ID> --no-paste "test message"
 
 ### 实例未收到消息
 
-1. 检查 `.ccb_config/pane_mapping.json` 是否存在
+1. 检查 `.cms_config/pane_mapping.json` 是否存在
 2. 重新运行 `start.bat` 刷新映射
 3. 确认在 WezTerm 环境中运行
 
 ### 启动失败
 
 1. 确认 WezTerm 已安装并在 PATH 中
-2. 检查 `.ccb_config/ccb.config` JSON 格式正确
+2. 检查 `.cms_config/cms.config` JSON 格式正确
 3. 查看错误信息，确认 Python 版本 >= 3.8
 
 ### JSON 配置错误
 
-确保 `ccb.config` 中：
+确保 `cms.config` 中：
 - 最后一个数组元素后**没有逗号**
 - 所有引号匹配
 - 使用 JSON 验证器检查语法
@@ -188,7 +188,7 @@ wezterm cli send-text --pane-id <PANE_ID> --no-paste "test message"
 ## 🔄 更新到新电脑
 
 1. 复制项目文件夹到新电脑
-2. 安装依赖（Python, WezTerm, CCB）
+2. 安装依赖（Python, WezTerm, CMS）
 3. 在 WezTerm 中运行 `start.bat`
 
 ## 💡 使用场景

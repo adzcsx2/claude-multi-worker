@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-WezTerm detector for CCB startup scripts
+WezTerm detector for CMS startup scripts
 
 This module provides reliable WezTerm detection without relying on wezterm cli.
 """

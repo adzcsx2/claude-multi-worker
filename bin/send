@@ -20,44 +20,83 @@ from pathlib import Path
 script_dir = Path(__file__).resolve().parent
 project_root = script_dir.parent
 
+
 def load_config():
-    """从pane_mapping.json读取实际pane ID映射"""
+    """从映射文件读取实际 ID 映射（支持 pane, window 和 tab 三种模式）"""
     # 从当前工作目录读取配置（用户所在的项目目录）
     work_dir = Path.cwd()
-    
-    # 优先读取pane映射文件
-    mapping_file = work_dir / ".ccb_config" / "pane_mapping.json"
-    if mapping_file.exists():
+
+    # 优先读取标签页映射文件
+    tab_mapping_file = work_dir / ".cms_config" / "tab_mapping.json"
+    if tab_mapping_file.exists():
         try:
-            with open(mapping_file, 'r', encoding='utf-8') as f:
-                mapping = json.load(f)
-            return {k.lower(): str(v) for k, v in mapping.items()}
+            with open(tab_mapping_file, "r", encoding="utf-8") as f:
+                mapping_data = json.load(f)
+            tabs = mapping_data.get("tabs", {})
+            # 提取 pane_id (标签页也使用 pane_id)
+            result = {}
+            for inst_id, tab_data in tabs.items():
+                if isinstance(tab_data, dict) and "pane_id" in tab_data:
+                    result[inst_id.lower()] = {"id": tab_data["pane_id"], "type": "tab"}
+            return result
         except Exception:
             pass
-    
-    # 降级方案：从ccb.config读取顺序映射
+
+    # 其次读取窗口映射文件
+    window_mapping_file = work_dir / ".cms_config" / "window_mapping.json"
+    if window_mapping_file.exists():
+        try:
+            with open(window_mapping_file, "r", encoding="utf-8") as f:
+                mapping_data = json.load(f)
+            windows = mapping_data.get("windows", {})
+            # 提取 window_id
+            result = {}
+            for inst_id, win_data in windows.items():
+                if isinstance(win_data, dict) and "window_id" in win_data:
+                    result[inst_id.lower()] = {
+                        "id": win_data["window_id"],
+                        "type": "window",
+                    }
+            return result
+        except Exception:
+            pass
+
+    # 再次读取窗格映射文件
+    pane_mapping_file = work_dir / ".cms_config" / "pane_mapping.json"
+    if pane_mapping_file.exists():
+        try:
+            with open(pane_mapping_file, "r", encoding="utf-8") as f:
+                mapping = json.load(f)
+            return {
+                k.lower(): {"id": str(v), "type": "pane"} for k, v in mapping.items()
+            }
+        except Exception:
+            pass
+
+    # 降级方案：从cms.config读取顺序映射
     config_paths = [
-        work_dir / ".ccb_config" / "ccb.config",
-        work_dir / "ccb.config",
-        Path.home() / ".ccb" / "ccb.config",
+        work_dir / ".cms_config" / "cms.config",
+        work_dir / "cms.config",
+        Path.home() / ".cms" / "cms.config",
     ]
-    
+
     for config_file in config_paths:
         if config_file.exists():
             try:
-                with open(config_file, 'r', encoding='utf-8') as f:
+                with open(config_file, "r", encoding="utf-8") as f:
                     config = json.load(f)
                 instances = config.get("claude", {}).get("instances", [])
                 role_map = {}
                 for idx, inst in enumerate(instances):
                     role_id = inst.get("id", "")
                     if role_id:
-                        role_map[role_id.lower()] = str(idx)
+                        role_map[role_id.lower()] = {"id": str(idx), "type": "pane"}
                 return role_map
             except Exception:
                 continue
-    
+
     return {}
+
 
 def main():
     if len(sys.argv) < 3:
@@ -66,45 +105,104 @@ def main():
         print("  send ui 'Design a login page'", file=sys.stderr)
         print("  send coder 'Implement this feature'", file=sys.stderr)
         return 1
-    
+
     instance = sys.argv[1].lower()
     message = " ".join(sys.argv[2:])
-    
+
     role_map = load_config()
-    
+
     if not role_map:
         print("Error: Could not load instance configuration", file=sys.stderr)
         return 1
-    
+
     if instance not in role_map:
         print(f"Error: Unknown instance '{instance}'", file=sys.stderr)
         print(f"Available: {', '.join(role_map.keys())}", file=sys.stderr)
         return 1
-    
-    pane_id = role_map[instance]
-    
+
+    target = role_map[instance]
+    target_id = target["id"]
+    target_type = target.get("type", "pane")
+
     try:
-        # 发送消息
-        subprocess.run(
-            ["wezterm", "cli", "send-text", "--pane-id", pane_id, "--no-paste", message],
-            check=True,
-            capture_output=True
-        )
-        # 发送回车
-        subprocess.run(
-            ["wezterm", "cli", "send-text", "--pane-id", pane_id, "--no-paste"],
-            input=b"\r",
-            check=True,
-            capture_output=True
-        )
-        print(f"[OK] Sent to {instance} (pane {pane_id})")
+        if target_type == "window":
+            # 发送到窗口
+            subprocess.run(
+                [
+                    "wezterm",
+                    "cli",
+                    "send-text",
+                    "--window-id",
+                    target_id,
+                    "--no-paste",
+                    message,
+                ],
+                check=True,
+                capture_output=True,
+            )
+            # 发送回车
+            subprocess.run(
+                ["wezterm", "cli", "send-text", "--window-id", target_id, "--no-paste"],
+                input=b"\r",
+                check=True,
+                capture_output=True,
+            )
+            print(f"[OK] Sent to {instance} (window {target_id})")
+        elif target_type == "tab":
+            # 发送到标签页 (标签页使用 pane_id)
+            subprocess.run(
+                [
+                    "wezterm",
+                    "cli",
+                    "send-text",
+                    "--pane-id",
+                    target_id,
+                    "--no-paste",
+                    message,
+                ],
+                check=True,
+                capture_output=True,
+            )
+            # 发送回车
+            subprocess.run(
+                ["wezterm", "cli", "send-text", "--pane-id", target_id, "--no-paste"],
+                input=b"\r",
+                check=True,
+                capture_output=True,
+            )
+            print(f"[OK] Sent to {instance} (tab {target_id})")
+        else:
+            # 发送到窗格
+            subprocess.run(
+                [
+                    "wezterm",
+                    "cli",
+                    "send-text",
+                    "--pane-id",
+                    target_id,
+                    "--no-paste",
+                    message,
+                ],
+                check=True,
+                capture_output=True,
+            )
+            # 发送回车
+            subprocess.run(
+                ["wezterm", "cli", "send-text", "--pane-id", target_id, "--no-paste"],
+                input=b"\r",
+                check=True,
+                capture_output=True,
+            )
+            print(f"[OK] Sent to {instance} (pane {target_id})")
         return 0
-    except subprocess.CalledProcessError:
-        print(f"[ERROR] Failed to send to pane {pane_id}", file=sys.stderr)
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Failed to send to {target_type} {target_id}", file=sys.stderr)
+        print(f"[ERROR] {e}", file=sys.stderr)
         return 1
     except Exception as e:
         print(f"[ERROR] {e}", file=sys.stderr)
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

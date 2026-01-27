@@ -77,9 +77,9 @@ def normalize_work_dir(value: str | Path) -> str:
     return s
 
 
-def _find_ccb_config_root(start_dir: Path) -> Path | None:
+def _find_cms_config_root(start_dir: Path) -> Path | None:
     """
-    Find a `.ccb_config/` directory in the current working directory only.
+    Find a `.cms_config/` directory in the current working directory only.
 
     This enforces per-directory isolation (no ancestor traversal).
     """
@@ -88,7 +88,7 @@ def _find_ccb_config_root(start_dir: Path) -> Path | None:
     except Exception:
         current = Path.cwd()
     try:
-        cfg = current / ".ccb_config"
+        cfg = current / ".cms_config"
         if cfg.is_dir():
             return current
     except Exception:
@@ -96,12 +96,12 @@ def _find_ccb_config_root(start_dir: Path) -> Path | None:
     return None
 
 
-def compute_ccb_project_id(work_dir: Path) -> str:
+def compute_cms_project_id(work_dir: Path) -> str:
     """
-    Compute CCB's routing project id (ccb_project_id).
+    Compute CMS's routing project id (cms_project_id).
 
     Priority:
-    - Current directory containing `.ccb_config/` (project anchor).
+    - Current directory containing `.cms_config/` (project anchor).
     - Current work_dir (fallback).
     """
     try:
@@ -109,8 +109,8 @@ def compute_ccb_project_id(work_dir: Path) -> str:
     except Exception:
         wd = Path.cwd()
 
-    # Priority 1: Current directory `.ccb_config/` only
-    base = _find_ccb_config_root(wd)
+    # Priority 1: Current directory `.cms_config/` only
+    base = _find_cms_config_root(wd)
 
     if base is None:
         base = wd

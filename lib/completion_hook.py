@@ -1,7 +1,7 @@
 """
-CCB Completion Hook - Async notification when CCB delegation tasks complete.
+CMS Completion Hook - Async notification when CMS delegation tasks complete.
 
-This module provides a function to notify Claude when a CCB task completes.
+This module provides a function to notify Claude when a CMS task completes.
 The notification is sent asynchronously to avoid blocking the daemon.
 """
 
@@ -24,23 +24,23 @@ def env_bool(name: str, default: bool = True) -> bool:
 
 def _run_hook_async(provider: str, output_file: Optional[str], reply: str, req_id: str, caller: str) -> None:
     """Run the completion hook in a background thread."""
-    if not env_bool("CCB_COMPLETION_HOOK_ENABLED", True):
+    if not env_bool("CMS_COMPLETION_HOOK_ENABLED", True):
         return
 
     def _run():
         try:
-            # Find ccb-completion-hook script (Python script only, not .cmd wrapper)
+            # Find cms-completion-hook script (Python script only, not .cmd wrapper)
             script_paths = [
-                Path(__file__).parent.parent / "bin" / "ccb-completion-hook",
-                Path.home() / ".local" / "bin" / "ccb-completion-hook",
-                Path("/usr/local/bin/ccb-completion-hook"),
+                Path(__file__).parent.parent / "bin" / "cms-completion-hook",
+                Path.home() / ".local" / "bin" / "cms-completion-hook",
+                Path("/usr/local/bin/cms-completion-hook"),
             ]
             # On Windows, check installed location (Python script, not .cmd)
             if os.name == "nt":
                 localappdata = os.environ.get("LOCALAPPDATA", "")
                 if localappdata:
                     # The actual Python script is in the bin folder without extension
-                    script_paths.insert(0, Path(localappdata) / "codex-dual" / "bin" / "ccb-completion-hook")
+                    script_paths.insert(0, Path(localappdata) / "codex-dual" / "bin" / "cms-completion-hook")
 
             script = None
             for p in script_paths:
@@ -81,14 +81,14 @@ def notify_completion(
     caller: str = "claude",
 ) -> None:
     """
-    Notify the caller that a CCB delegation task has completed.
+    Notify the caller that a CMS delegation task has completed.
 
     Args:
         provider: Provider name (codex, gemini, opencode, droid)
         output_file: Path to the output file (if any)
         reply: The reply text from the provider
         req_id: The request ID
-        done_seen: Whether the CCB_DONE signal was detected
+        done_seen: Whether the CMS_DONE signal was detected
         caller: Who initiated the request (claude, codex, droid)
     """
     if not done_seen:
