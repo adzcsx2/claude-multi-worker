@@ -40,16 +40,28 @@
 }
 ```
 
-### 2. 启动所有实例
+### 2. 启动实例
 
 在 **WezTerm 终端**中运行：
 
+**默认启动（c1, c2, c3）：**
 ```bash
 python START_MULTI_TAB.py
 ```
 
-脚本会自动：
+**指定实例启动：**
+```bash
+# 使用配置文件中的实例
+python START_MULTI_TAB.py ui coder test
 
+# 启动任意数量的实例
+python START_MULTI_TAB.py c1 c2 c3 c4 c5
+
+# 使用 --bypass 参数（跳过权限检查）
+python START_MULTI_TAB.py --bypass ui coder test
+```
+
+脚本会自动：
 - 在 WezTerm 中创建多个标签页
 - 每个标签页启动一个 Claude 实例
 - 保存映射关系到 `.cms_config/tab_mapping.json`
@@ -58,17 +70,29 @@ python START_MULTI_TAB.py
 
 在任意实例中使用 `send` 命令向其他实例发送消息：
 
-**Windows:**
+**向默认实例（c1, c2, c3）发送消息：**
 
 ```cmd
+# Windows
+bin\send c1 "分析这个需求"
+bin\send c2 "实现这个功能"
+bin\send c3 "测试这个模块"
+
+# Linux/Mac
+bin/send c1 "分析这个需求"
+bin/send c2 "实现这个功能"
+bin/send c3 "测试这个模块"
+```
+
+**向配置文件中的实例发送消息：**
+
+```cmd
+# Windows
 bin\send ui "设计登录页面"
 bin\send coder "实现用户认证功能"
 bin\send test "测试登录流程"
-```
 
-**Linux/Mac:**
-
-```bash
+# Linux/Mac
 bin/send ui "设计登录页面"
 bin/send coder "实现用户认证功能"
 bin/send test "测试登录流程"
@@ -78,6 +102,20 @@ bin/send test "测试登录流程"
 
 ### 典型工作流
 
+**使用默认实例（c1, c2, c3）：**
+```bash
+# 1. 在 c1 实例分配任务
+bin\send c1 "分析用户需求，提供技术方案"
+bin\send c2 "根据 c1 的方案实现代码"
+bin\send c3 "对 c2 的实现进行测试"
+
+# 2. 实例间协作
+bin\send c2 "c1 已完成分析，请查看方案文档"
+bin\send c3 "c2 已完成开发，请开始测试"
+bin\send c1 "c3 测试通过，可以发布"
+```
+
+**使用配置实例（ui, coder, test）：**
 ```bash
 # 1. 在 default 实例分配任务
 bin\send ui "设计一个现代化的仪表板界面"
