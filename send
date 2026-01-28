@@ -22,54 +22,24 @@ project_root = script_dir.parent
 
 
 def load_config():
-    """Read actual ID mapping from mapping files (supports pane, window and tab modes)"""
-    # 从当前工作目录读取配置（用户所在的项目目录）
+    """Read tab mapping from .cms_config/tab_mapping.json"""
+    # Read config from current working directory
     work_dir = Path.cwd()
 
-    # 优先读取标签页映射文件
+    # Read tab mapping file
     tab_mapping_file = work_dir / ".cms_config" / "tab_mapping.json"
     if tab_mapping_file.exists():
         try:
             with open(tab_mapping_file, "r", encoding="utf-8") as f:
                 mapping_data = json.load(f)
             tabs = mapping_data.get("tabs", {})
-            # Extract pane_id (tabs also use pane_id)
+            # Extract pane_id from tabs
             result = {}
             for inst_id, tab_data in tabs.items():
                 if isinstance(tab_data, dict) and "pane_id" in tab_data:
-                    result[inst_id.lower()] = {"id": tab_data["pane_id"], "type": "tab"}
-            return result
-        except Exception:
-            pass
-
-    # Second priority: read window mapping file
-    window_mapping_file = work_dir / ".cms_config" / "window_mapping.json"
-    if window_mapping_file.exists():
-        try:
-            with open(window_mapping_file, "r", encoding="utf-8") as f:
-                mapping_data = json.load(f)
-            windows = mapping_data.get("windows", {})
-            # Extract window_id
-            result = {}
-            for inst_id, win_data in windows.items():
-                if isinstance(win_data, dict) and "window_id" in win_data:
-                    result[inst_id.lower()] = {
-                        "id": win_data["window_id"],
-                        "type": "window",
-                    }
-            return result
-        except Exception:
-            pass
-
-    # Third priority: read pane mapping file
-    pane_mapping_file = work_dir / ".cms_config" / "pane_mapping.json"
-    if pane_mapping_file.exists():
-        try:
-            with open(pane_mapping_file, "r", encoding="utf-8") as f:
-                mapping = json.load(f)
-            return {
-                k.lower(): {"id": str(v), "type": "pane"} for k, v in mapping.items()
-            }
+                    result[inst_id.lower()] = tab_data["pane_id"]
+            if result:
+                return result
         except Exception:
             pass
 
@@ -90,8 +60,9 @@ def load_config():
                 for idx, inst in enumerate(instances):
                     role_id = inst.get("id", "")
                     if role_id:
-                        role_map[role_id.lower()] = {"id": str(idx), "type": "pane"}
-                return role_map
+                        role_map[role_id.lower()] = str(idx)
+                if role_map:
+                    return role_map
             except Exception:
                 continue
 
@@ -121,8 +92,7 @@ def main():
         if instance.startswith("c") and instance[1:].isdigit():
             instance_num = int(instance[1:])
             if 1 <= instance_num <= 12:
-                target_id = str(instance_num - 1)  # c1 -> pane 0, c2 -> pane 1
-                target_type = "tab"
+                pane_id = str(instance_num - 1)  # c1 -> pane 0, c2 -> pane 1
             else:
                 print(f"Error: Instance '{instance}' not found", file=sys.stderr)
                 return 1
@@ -130,9 +100,7 @@ def main():
             print(f"Error: Instance '{instance}' not found", file=sys.stderr)
             return 1
     else:
-        target = role_map[instance]
-        target_id = target["id"]
-        target_type = target.get("type", "pane")
+        pane_id = role_map[instance]
 
     try:
         # Send message (in two steps: send message first, then send enter)
@@ -142,7 +110,7 @@ def main():
                 "cli",
                 "send-text",
                 "--pane-id",
-                target_id,
+                pane_id,
                 "--no-paste",
                 message,
             ],
@@ -151,19 +119,25 @@ def main():
         )
         # Send enter
         subprocess.run(
-            ["wezterm", "cli", "send-text", "--pane-id", target_id, "--no-paste"],
+            ["wezterm", "cli", "send-text", "--pane-id", pane_id, "--no-paste"],
             input=b"\r",
             check=True,
             capture_output=True,
         )
-        print(f"✓ Sent to {instance} (pane {target_id})")
+        print(f"✓ Sent to {instance} (pane {pane_id})")
         return 0
     except subprocess.CalledProcessError:
-        print(f"Error: Failed to send to pane {target_id}", file=sys.stderr)
-        print(f"Hint: Please run 'python run.py' to start instances first", file=sys.stderr)
+        print(f"Error: Failed to send to pane {pane_id}", file=sys.stderr)
+        print(
+            f"Hint: Please run 'python run.py' to start instances first",
+            file=sys.stderr,
+        )
         return 1
     except FileNotFoundError:
-        print(f"Error: wezterm command not found, please ensure WezTerm is installed", file=sys.stderr)
+        print(
+            f"Error: wezterm command not found, please ensure WezTerm is installed",
+            file=sys.stderr,
+        )
         return 1
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
