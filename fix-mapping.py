@@ -1,77 +1,98 @@
 ﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-快速修复：创建c1, c2, c3的映射
-
-运行这个脚本来修复实例名不匹配的问题
+从 WezTerm 获取当前运行的窗格并创建 c1, c2, c3 映射
 """
 
 import json
+import subprocess
+import shutil
 from pathlib import Path
 
 project_dir = Path.cwd()
 config_dir = project_dir / ".cms_config"
 mapping_file = config_dir / "tab_mapping.json"
 
-if not mapping_file.exists():
-    print(f"[ERROR] {mapping_file} not found")
+# 查找 WezTerm
+wezterm = shutil.which("wezterm") or shutil.which("wezterm.exe")
+if not wezterm:
+    common_path = Path("C:/Program Files/WezTerm/wezterm.exe")
+    if common_path.exists():
+        wezterm = str(common_path)
+
+if not wezterm:
+    print("[ERROR] WezTerm not found")
+    print("Please install WezTerm from: https://wezfurlong.org/wezterm/")
     exit(1)
 
-# 读取现有映射 (处理BOM)
+print(f"[OK] Found WezTerm: {wezterm}")
+
+# 获取所有窗格
 try:
-    with open(mapping_file, "r", encoding="utf-8-sig") as f:
-        mapping = json.load(f)
-except:
-    with open(mapping_file, "r", encoding="utf-8") as f:
-        mapping = json.load(f)
-
-# 获取现有的pane_id
-tabs = mapping.get("tabs", {})
-pane_ids = []
-
-# 优先使用 ui, coder, test
-for key in ["ui", "coder", "test"]:
-    if key in tabs and "pane_id" in tabs[key]:
-        pane_ids.append(tabs[key]["pane_id"])
-
-# 如果没有找到3个，尝试使用任意3个
-if len(pane_ids) < 3:
-    pane_ids = []
-    for key, value in tabs.items():
-        if "pane_id" in value:
-            pane_ids.append(value["pane_id"])
-        if len(pane_ids) >= 3:
-            break
-
-if len(pane_ids) < 3:
-    print("[ERROR] Not enough panes found in tab_mapping.json")
-    print(f"Found: {list(tabs.keys())}")
-    print("\nPlease make sure you have started 3 Claude windows")
+    result = subprocess.run(
+        [wezterm, "cli", "list", "--format", "json"],
+        capture_output=True,
+        text=True,
+        timeout=5
+    )
+    
+    if result.returncode != 0:
+        print("[ERROR] Failed to get pane list from WezTerm")
+        print(f"Error: {result.stderr}")
+        print("\nMake sure WezTerm is running with at least 3 windows/tabs")
+        exit(1)
+    
+    panes = []
+    for line in result.stdout.strip().split("\n"):
+        if line.strip():
+            try:
+                panes.append(json.loads(line))
+            except:
+                pass
+    
+    if len(panes) < 3:
+        print(f"[ERROR] Found only {len(panes)} panes, need at least 3")
+        print("\nPlease make sure you have 3 WezTerm windows/tabs open")
+        exit(1)
+    
+    print(f"[OK] Found {len(panes)} panes")
+    
+    # 创建 c1, c2, c3 映射
+    config_dir.mkdir(exist_ok=True)
+    
+    mapping = {
+        "work_dir": str(project_dir),
+        "tabs": {
+            "c1": {"pane_id": str(panes[0]["pane_id"]), "role": "Design"},
+            "c2": {"pane_id": str(panes[1]["pane_id"]), "role": "Main"},
+            "c3": {"pane_id": str(panes[2]["pane_id"]), "role": "Test"},
+        },
+        "created_at": panes[0].get("created_at", 0)
+    }
+    
+    # 保存映射
+    with open(mapping_file, "w", encoding="utf-8") as f:
+        json.dump(mapping, f, indent=2, ensure_ascii=False)
+    
+    print(f"[OK] Tab mapping created: {mapping_file}")
+    print("")
+    print("Pane mappings:")
+    print(f"  c1 (Design) -> pane {panes[0]['pane_id']}")
+    print(f"  c2 (Main)   -> pane {panes[1]['pane_id']}")
+    print(f"  c3 (Test)   -> pane {panes[2]['pane_id']}")
+    print("")
+    print("Test with:")
+    print('  python send-tab.py c1 "继续"')
+    print('  python send-tab.py c2 "继续"')
+    print('  python send-tab.py c3 "继续"')
+    print("")
+    
+except subprocess.TimeoutExpired:
+    print("[ERROR] WezTerm CLI timeout")
+    print("Make sure WezTerm is running")
     exit(1)
-
-# 创建新的映射 c1, c2, c3
-new_tabs = {
-    "c1": {"pane_id": pane_ids[0], "role": "Design (C1)"},  # ui的pane_id
-    "c2": {"pane_id": pane_ids[1], "role": "Development (C2)"},  # coder的pane_id
-    "c3": {"pane_id": pane_ids[2], "role": "Testing (C3)"},  # test的pane_id
-}
-
-# 保留旧的映射，添加新的
-tabs.update(new_tabs)
-mapping["tabs"] = tabs
-
-# 保存
-with open(mapping_file, "w", encoding="utf-8") as f:
-    json.dump(mapping, f, indent=2, ensure_ascii=False)
-
-print("[OK] Tab mapping updated!")
-print("")
-print("Added mappings:")
-print(f"  c1 -> pane {pane_ids[0]} (Design)")
-print(f"  c2 -> pane {pane_ids[1]} (Development)")
-print(f"  c3 -> pane {pane_ids[2]} (Testing)")
-print("")
-print("Now you can use:")
-print("  python bin/send c1 '继续'")
-print("  python bin/send c2 '继续'")
-print("  python bin/send c3 '继续'")
+except Exception as e:
+    print(f"[ERROR] {e}")
+    import traceback
+    traceback.print_exc()
+    exit(1)
