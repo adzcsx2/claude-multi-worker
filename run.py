@@ -224,7 +224,7 @@ def main():
 
     if not in_wezterm:
         print("=" * 60)
-        print("  ⚠️  Please run this script in WezTerm terminal")
+        print("  WARNING: Please run this script in WezTerm terminal")
         print("=" * 60)
         print()
         print(
@@ -365,7 +365,7 @@ def main():
 
                 print()
                 print("=" * 60)
-                print("[✓] All tabs created!")
+                print("[SUCCESS] All tabs created!")
                 print("=" * 60)
                 print()
                 print("Use send command to communicate:")
@@ -490,7 +490,7 @@ def main():
 
         print()
         print("=" * 60)
-        print("[✓] Setup complete!")
+        print("[SUCCESS] Setup complete!")
         print("=" * 60)
         print()
         print("Use send command to communicate:")

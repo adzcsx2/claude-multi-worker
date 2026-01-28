@@ -81,7 +81,7 @@ def parse_claude_instances(providers: List[str], config_path: Optional[Path] = N
                     if inst_id in all_instances:
                         claude_instances.append(inst_id)
                     else:
-                        print(f"⚠️  Warning: Claude instance '{inst_id}' not found in config", file=sys.stderr)
+                        print(f"WARNING: Claude instance '{inst_id}' not found in config", file=sys.stderr)
 
         # Check for standalone "claude"
         elif provider_lower == "claude":

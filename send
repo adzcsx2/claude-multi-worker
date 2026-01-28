@@ -124,7 +124,7 @@ def main():
             check=True,
             capture_output=True,
         )
-        print(f"✓ Sent to {instance} (pane {pane_id})")
+        print(f"Sent to {instance} (pane {pane_id})")
         return 0
     except subprocess.CalledProcessError:
         print(f"Error: Failed to send to pane {pane_id}", file=sys.stderr)
