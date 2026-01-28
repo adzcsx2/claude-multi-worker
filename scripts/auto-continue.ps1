@@ -54,12 +54,12 @@ function Trigger-Continue {
 
     $global:triggerCount++
 
-    # Show notification
+    # Show notification (English only to avoid encoding issues)
     Write-Host ""
     Write-Host "========================================================" -BackgroundColor DarkGreen
     Write-Host "  [$($global:triggerCount)] SWITCH TO: $WindowName" -ForegroundColor Black -BackgroundColor Green
     Write-Host "  Step: $Step" -ForegroundColor Black -BackgroundColor Green
-    Write-Host "  Clipboard ready - Press Ctrl+V in $WindowName" -ForegroundColor Black -BackgroundColor Green
+    Write-Host "  Clipboard ready - Press Ctrl+V" -ForegroundColor Black -BackgroundColor Green
     Write-Host "========================================================" -BackgroundColor DarkGreen
     Write-Host ""
 
@@ -93,9 +93,9 @@ $action = {
                 $global:lastStep = $currentStep
 
                 $windowName = switch ($currentWindow) {
-                    "C1" { "C1-Design (设计窗口)" }
-                    "C2" { "C2-Main (开发窗口)" }
-                    "C3" { "C3-Test (测试窗口)" }
+                    "C1" { "C1-Design" }
+                    "C2" { "C2-Main" }
+                    "C3" { "C3-Test" }
                 }
 
                 # Wait a bit for the previous window to finish
