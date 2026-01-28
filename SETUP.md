@@ -26,10 +26,10 @@
 {
   "claude": {
     "instances": [
-      {"id": "default", "role": "general coordinator", "autostart": true},
-      {"id": "ui", "role": "UI/UX designer", "autostart": true},
-      {"id": "coder", "role": "developer", "autostart": true},
-      {"id": "test", "role": "QA engineer", "autostart": true}
+      { "id": "default", "role": "general coordinator", "autostart": true },
+      { "id": "ui", "role": "UI/UX designer", "autostart": true },
+      { "id": "coder", "role": "developer", "autostart": true },
+      { "id": "test", "role": "QA engineer", "autostart": true }
     ]
   }
 }
@@ -46,6 +46,7 @@ start.bat
 ```
 
 脚本会自动：
+
 - 创建网格布局（根据实例数量）
 - 在每个pane显示角色标签
 - 启动对应的cms实例
@@ -65,6 +66,7 @@ send test "测试这个API"
 ### 实例映射
 
 Pane ID按照配置文件中的instances数组顺序映射：
+
 - 第0个instance → pane 0
 - 第1个instance → pane 1
 - ...以此类推

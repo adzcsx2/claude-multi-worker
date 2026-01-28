@@ -1,18 +1,18 @@
 {
+  "work_dir": "E:\\ai_project\\claude-multi-starter",
   "tabs": {
     "c1": {
-      "pane_id": "0",
-      "role": "Design"
-    },
-    "c3": {
-      "pane_id": "2",
-      "role": "Test"
+      "pane_id": "10",
+      "role": "Assistant (c1)"
     },
     "c2": {
-      "pane_id": "1",
-      "role": "Main"
+      "pane_id": "11",
+      "role": "Assistant (c2)"
+    },
+    "c3": {
+      "pane_id": "12",
+      "role": "Assistant (c3)"
     }
   },
-  "work_dir": "E:\\ai_project\\claude-multi-starter",
-  "created_at": 1769589922
+  "created_at": 1769596086.5409408
 }

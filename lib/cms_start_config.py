@@ -14,6 +14,7 @@ DEFAULT_PROVIDERS = ["codex", "gemini", "opencode", "claude"]
 @dataclass
 class ClaudeInstanceConfig:
     """Claude instance configuration from cms.config"""
+
     id: str
     role: str = ""
     autostart: bool = True
@@ -23,6 +24,7 @@ class ClaudeInstanceConfig:
 @dataclass
 class ClaudeConfig:
     """Claude provider configuration"""
+
     enabled: bool = True
     instances: list[ClaudeInstanceConfig] = None
 
@@ -61,12 +63,14 @@ def _parse_claude_config(obj: dict) -> ClaudeConfig:
             if isinstance(inst_raw, str):
                 instances.append(ClaudeInstanceConfig(id=inst_raw))
             elif isinstance(inst_raw, dict):
-                instances.append(ClaudeInstanceConfig(
-                    id=inst_raw.get("id", "default"),
-                    role=inst_raw.get("role", ""),
-                    autostart=inst_raw.get("autostart", True),
-                    session_file=inst_raw.get("session_file", "")
-                ))
+                instances.append(
+                    ClaudeInstanceConfig(
+                        id=inst_raw.get("id", "default"),
+                        role=inst_raw.get("role", ""),
+                        autostart=inst_raw.get("autostart", True),
+                        session_file=inst_raw.get("session_file", ""),
+                    )
+                )
 
         if not instances:
             instances = [ClaudeInstanceConfig(id="default")]
@@ -93,7 +97,9 @@ def _parse_tokens(raw: str) -> list[str]:
     return [p for p in (part.strip() for part in parts) if p]
 
 
-def _parse_claude_instances_token(token: str) -> tuple[bool, list[ClaudeInstanceConfig]]:
+def _parse_claude_instances_token(
+    token: str,
+) -> tuple[bool, list[ClaudeInstanceConfig]]:
     """
     Parse claude instance syntax like: claude:alpha,beta:reviewer,gamma
     Returns (is_claude_token, list_of_instance_configs)
@@ -114,7 +120,9 @@ def _parse_claude_instances_token(token: str) -> tuple[bool, list[ClaudeInstance
         if ":" in part:
             # Format: instance_id:role
             inst_id, role = part.split(":", 1)
-            instances.append(ClaudeInstanceConfig(id=inst_id.strip(), role=role.strip()))
+            instances.append(
+                ClaudeInstanceConfig(id=inst_id.strip(), role=role.strip())
+            )
         else:
             # Format: instance_id only
             instances.append(ClaudeInstanceConfig(id=part))
@@ -122,7 +130,9 @@ def _parse_claude_instances_token(token: str) -> tuple[bool, list[ClaudeInstance
     return True, instances
 
 
-def _normalize_providers(tokens: list[str]) -> tuple[list[str], bool, list[ClaudeInstanceConfig]]:
+def _normalize_providers(
+    tokens: list[str],
+) -> tuple[list[str], bool, list[ClaudeInstanceConfig]]:
     providers: list[str] = []
     seen: set[str] = set()
     cmd_enabled = False
@@ -179,7 +189,9 @@ def _parse_config_obj(obj: object) -> dict:
                 if isinstance(data["claude"], dict):
                     existing_instances = data["claude"].get("instances", [])
                     if not existing_instances:
-                        data["claude"]["instances"] = [i.__dict__ for i in claude_instances]
+                        data["claude"]["instances"] = [
+                            i.__dict__ for i in claude_instances
+                        ]
         return data
 
     if isinstance(obj, list):
@@ -233,7 +245,7 @@ def _config_paths(work_dir: Path) -> Tuple[Path, Path]:
     project_root = Path(work_dir) / CONFIG_FILENAME
     project_cms = Path(work_dir) / ".cms_config" / CONFIG_FILENAME
     global_path = Path.home() / ".cms" / CONFIG_FILENAME
-    
+
     # 返回第一个存在的配置文件
     if project_root.exists():
         return project_root, global_path

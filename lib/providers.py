@@ -28,6 +28,7 @@ class ProviderClientSpec:
 @dataclass
 class ClaudeInstanceSpec:
     """Specification for a named Claude instance (e.g., 'alpha', 'beta', 'reviewer')"""
+
     instance_id: str
     role: str = ""
     session_filename: str = ".claude-session"
@@ -87,14 +88,14 @@ class ClaudeInstanceSpec:
 # Global registry of Claude instances
 _CLAUDE_INSTANCES: dict[str, ClaudeInstanceSpec] = {
     "default": ClaudeInstanceSpec(
-        instance_id="default",
-        role="general",
-        session_filename=".claude-session"
+        instance_id="default", role="general", session_filename=".claude-session"
     )
 }
 
 
-def register_claude_instance(instance_id: str, role: str = "", session_filename: str = "") -> ClaudeInstanceSpec:
+def register_claude_instance(
+    instance_id: str, role: str = "", session_filename: str = ""
+) -> ClaudeInstanceSpec:
     """Register a new Claude instance dynamically"""
     if instance_id == "default":
         raise ValueError("Cannot override 'default' instance")
@@ -102,7 +103,7 @@ def register_claude_instance(instance_id: str, role: str = "", session_filename:
     spec = ClaudeInstanceSpec(
         instance_id=instance_id,
         role=role or instance_id,
-        session_filename=session_filename or f".claude-{instance_id}-session"
+        session_filename=session_filename or f".claude-{instance_id}-session",
     )
     _CLAUDE_INSTANCES[instance_id] = spec
     return spec
@@ -133,7 +134,7 @@ def _auto_load_claude_instances():
         config_paths = [
             Path.cwd() / "cms.config",
             Path.cwd() / ".cms_config" / "cms.config",
-            Path.home() / ".cms" / "cms.config"
+            Path.home() / ".cms" / "cms.config",
         ]
 
         for config_path in config_paths:

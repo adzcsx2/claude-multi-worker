@@ -31,10 +31,10 @@
   "claude": {
     "enabled": true,
     "instances": [
-      {"id": "default", "role": "general coordinator", "autostart": true},
-      {"id": "ui", "role": "UI/UX designer", "autostart": true},
-      {"id": "coder", "role": "developer", "autostart": true},
-      {"id": "test", "role": "QA engineer", "autostart": true}
+      { "id": "default", "role": "general coordinator", "autostart": true },
+      { "id": "ui", "role": "UI/UX designer", "autostart": true },
+      { "id": "coder", "role": "developer", "autostart": true },
+      { "id": "test", "role": "QA engineer", "autostart": true }
     ]
   }
 }
@@ -49,6 +49,7 @@ python START_MULTI_TAB.py
 ```
 
 脚本会自动：
+
 - 在 WezTerm 中创建多个标签页
 - 每个标签页启动一个 Claude 实例
 - 保存映射关系到 `.cms_config/tab_mapping.json`
@@ -58,6 +59,7 @@ python START_MULTI_TAB.py
 在任意实例中使用 `send` 命令向其他实例发送消息：
 
 **Windows:**
+
 ```cmd
 bin\send ui "设计登录页面"
 bin\send coder "实现用户认证功能"
@@ -65,6 +67,7 @@ bin\send test "测试登录流程"
 ```
 
 **Linux/Mac:**
+
 ```bash
 bin/send ui "设计登录页面"
 bin/send coder "实现用户认证功能"
@@ -126,10 +129,10 @@ claude-multi-starter/
 {
   "claude": {
     "instances": [
-      {"id": "architect", "role": "系统架构师", "autostart": true},
-      {"id": "frontend", "role": "前端开发", "autostart": true},
-      {"id": "backend", "role": "后端开发", "autostart": true},
-      {"id": "devops", "role": "运维工程师", "autostart": true}
+      { "id": "architect", "role": "系统架构师", "autostart": true },
+      { "id": "frontend", "role": "前端开发", "autostart": true },
+      { "id": "backend", "role": "后端开发", "autostart": true },
+      { "id": "devops", "role": "运维工程师", "autostart": true }
     ]
   }
 }
@@ -142,10 +145,10 @@ claude-multi-starter/
 ```json
 {
   "tabs": {
-    "default": {"pane_id": "0", "tab_id": "0"},
-    "ui": {"pane_id": "1", "tab_id": "1"},
-    "coder": {"pane_id": "2", "tab_id": "2"},
-    "test": {"pane_id": "3", "tab_id": "3"}
+    "default": { "pane_id": "0", "tab_id": "0" },
+    "ui": { "pane_id": "1", "tab_id": "1" },
+    "coder": { "pane_id": "2", "tab_id": "2" },
+    "test": { "pane_id": "3", "tab_id": "3" }
   }
 }
 ```
@@ -155,17 +158,21 @@ claude-multi-starter/
 ## 🚨 故障排除
 
 ### 启动失败
+
 1. 确认在 **WezTerm** 终端中运行
 2. 检查 Python 版本 >= 3.8：`python --version`
 3. 确认 Claude CLI 已安装：`claude --version`
 
 ### 消息发送失败
+
 1. 确认映射文件存在：`.cms_config/tab_mapping.json`
 2. 重新启动实例刷新映射
 3. 检查实例 ID 是否正确（区分大小写）
 
 ### WezTerm 检测失败
+
 确保环境变量中有 `wezterm` 命令：
+
 ```bash
 wezterm --version
 ```
@@ -205,6 +212,7 @@ wezterm --version
 ### JSON 配置错误
 
 确保 `cms.config` 中：
+
 - 最后一个数组元素后**没有逗号**
 - 所有引号匹配
 - 使用 JSON 验证器检查语法
