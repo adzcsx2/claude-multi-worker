@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-# Wrapper script to invoke python3 as python on Windows
-# This fixes Git Bash environments where python3 is not in PATH
-
-exec python "$@"
