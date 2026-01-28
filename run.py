@@ -205,7 +205,7 @@ def main():
 
     if claude_args:
         print(f"[*] Claude args: {claude_args}")
-    print(f"[*] Will create {len(instance_ids)} tabs")
+    print(f"[*] Will create {len(instance_ids)} tabs (from instances with autostart: true)")
     print()
 
     # Create instance mapping
@@ -371,7 +371,7 @@ def main():
                 print("Use send command to communicate:")
                 print()
                 for inst_id in instance_ids:
-                    print(f'  bin\\send {inst_id} "your message"')
+                    print(f'  python send {inst_id} "your message"')
                 print()
                 return 0
             else:
@@ -391,13 +391,13 @@ def main():
         print("  Startup mode: Create tabs in current WezTerm window")
         print("=" * 60)
         print()
-        print("In current window:")
-        print(f"  1. Keep current pane as first instance ({instance_ids[0]})")
-        print(f"  2. Create {len(instance_ids)-1} new tabs")
+        print("Will do the following:")
+        print(f"  1. Use current tab for first instance ({instance_ids[0]})")
+        print(f"  2. Create {len(instance_ids)-1} new tab(s) for remaining instances")
         print("  3. Start Claude in each tab")
         print("  4. Set tab titles to instance names")
         print()
-        print("  Hint: Use Ctrl+Shift+Arrow keys to switch between panes")
+        print("  Hint: Use Ctrl+Tab or Ctrl+Shift+Tab to switch between tabs")
         print()
         print("=" * 60)
         print()
@@ -496,7 +496,7 @@ def main():
         print("Use send command to communicate:")
         print()
         for inst_id in instance_ids:
-            print(f'  bin\\send {inst_id} "your message"')
+            print(f'  python send {inst_id} "your message"')
         print()
 
     return 0
