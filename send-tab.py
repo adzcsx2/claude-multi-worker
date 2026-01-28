@@ -81,18 +81,21 @@ def main():
 
     try:
         # 使用 WezTerm CLI 发送文本
-        # 自动添加换行符以模拟按下回车
+        # 自动添加换行符以模拟按下回车键提交
         message_with_newline = message + "\n"
         
+        # 增加超时时间，避免在某些情况下超时
         result = subprocess.run(
             [wezterm_bin, "cli", "send-text", "--pane-id", str(pane_id), "--no-paste", message_with_newline],
             capture_output=True,
             text=True,
-            timeout=2,
+            encoding='utf-8',
+            errors='ignore',
+            timeout=5,
         )
         
         if result.returncode == 0:
-            print(f"[OK] Message sent to {instance} (pane {pane_id}): '{message}'")
+            print(f"[OK] Message sent and submitted to {instance} (pane {pane_id}): '{message}'")
             return 0
         else:
             print(f"[ERROR] Failed to send message: {result.stderr}")
