@@ -1,37 +1,33 @@
-# CMS Multi-Instance Launcher
+# Claude Multi Starter - 最小核心版
 
-一键启动多个 Claude Multi Starter 实例，实现多个 AI 助手的协同工作。基于 WezTerm，每个实例独立窗口，支持实例间快速消息传递。
+多实例 Claude CLI 启动和通信工具。在 WezTerm 中同时运行多个独立的 Claude 实例，实现 AI 助手协同工作。
 
-## ✨ 特性
+## ✨ 核心功能
 
-- 🚀 **一键启动** - 运行 `start.bat` 自动创建多个 Claude 实例
-- 🪟 **独立窗口** - 每个实例独立窗口，标题显示实例名
-- 💬 **快速通信** - `send` 命令实现实例间即时消息传递
-- ⚙️ **动态配置** - 通过 `.cms_config/cms.config` 自定义实例数量和角色
-- 🎯 **自动映射** - 启动时自动检测并保存 pane ID 映射
+- 🚀 **多实例启动** - 一键在 WezTerm 标签页中启动多个 Claude 实例
+- 💬 **实例通信** - 使用 `send` 命令在实例间发送消息
+- ⚙️ **灵活配置** - 通过 `.cms_config/cms.config` 自定义实例数量和角色
+- 📍 **自动映射** - 自动保存实例到标签页的映射关系
 
 ## 🔧 环境要求
 
 - **Python 3.8+**
 - **WezTerm** - [下载安装](https://wezfurlong.org/wezterm/installation.html)
-- **CMS (Claude Multi Starter)** - Claude 命令行工具
+- **Claude CLI** - Anthropic 官方命令行工具
 
-## 📦 快速开始
+## 🚀 快速开始
 
-### 1. 克隆项目
+### 1. 配置实例
 
-```bash
-git clone <repository-url>
-cd claude_code_bridge
-```
-
-### 2. 配置实例
-
-编辑 `.cms_config/cms.config` 文件：
+编辑 `.cms_config/cms.config` 定义你需要的实例：
 
 ```json
 {
   "providers": ["claude"],
+  "flags": {
+    "auto": true,
+    "claudeArgs": ["--dangerously-skip-permissions"]
+  },
   "claude": {
     "enabled": true,
     "instances": [
@@ -44,125 +40,153 @@ cd claude_code_bridge
 }
 ```
 
-### 3. 启动
+### 2. 启动所有实例
 
-在 WezTerm 中运行：
+在 **WezTerm 终端**中运行：
 
 ```bash
-start.bat
+python START_MULTI_TAB.py
 ```
 
-脚本会：
-1. 为每个实例创建独立窗口
-2. 设置窗口标题为实例名
-3. 自动启动 CMS
-4. 保存 pane 映射到 `.cms_config/pane_mapping.json`
+脚本会自动：
+- 在 WezTerm 中创建多个标签页
+- 每个标签页启动一个 Claude 实例
+- 保存映射关系到 `.cms_config/tab_mapping.json`
 
-## 📡 实例间通信
+### 3. 实例间通信
 
-### send 命令
+在任意实例中使用 `send` 命令向其他实例发送消息：
 
-快速发送消息到指定实例：
-
-```bash
-send ui "设计登录页面"
-send coder "实现用户认证功能"
-send test "测试登录流程"
-send default "汇总所有进度"
+**Windows:**
+```cmd
+bin\send ui "设计登录页面"
+bin\send coder "实现用户认证功能"
+bin\send test "测试登录流程"
 ```
 
-### 工作流示例
+**Linux/Mac:**
+```bash
+bin/send ui "设计登录页面"
+bin/send coder "实现用户认证功能"
+bin/send test "测试登录流程"
+```
+
+## 💡 使用示例
+
+### 典型工作流
 
 ```bash
-# 在 default 实例中协调任务
-send ui "设计一个现代化的仪表板界面"
-send coder "实现数据可视化组件"
-send test "编写集成测试"
+# 1. 在 default 实例分配任务
+bin\send ui "设计一个现代化的仪表板界面"
+bin\send coder "实现数据可视化组件"
+bin\send test "编写单元测试"
 
-# UI 完成后通知 coder
-send coder "UI 设计完成，请查看 designs/ 目录"
+# 2. UI 设计完成后通知开发
+bin\send coder "UI 设计已完成，文件在 /designs 目录"
 
-# Coder 实现后通知 test
-send test "功能已实现，请开始测试"
+# 3. 开发完成后通知测试
+bin\send test "功能已实现，请开始测试"
+
+# 4. 测试完成后汇报
+bin\send default "所有测试通过，可以发布"
 ```
 
 ## 📂 项目结构
 
 ```
-claude_code_bridge/
+claude-multi-starter/
 ├── .cms_config/
-│   ├── cms.config           # 实例配置
-│   └── pane_mapping.json    # Pane ID 映射（自动生成）
+│   ├── cms.config              # 实例配置
+│   ├── tab_mapping.json        # 标签页映射（自动生成）
+│   └── .claude-*-session       # 各实例会话文件
 ├── bin/
-│   ├── send                 # 实例间消息命令
-│   ├── ask                  # 异步任务命令
-│   └── ...                  # 其他 CMS 命令
-├── lib/                     # Python 库文件
-├── skills/                  # CMS Skills
-├── start-dynamic.py         # 动态启动脚本
-├── start.bat                # Windows 启动入口
-├── install-skills.ps1       # Skills 安装脚本（可选）
-└── README.md
+│   ├── send                    # 通信命令（Linux/Mac）
+│   └── send.cmd                # 通信命令（Windows）
+├── lib/                        # 核心库文件
+├── START_MULTI_TAB.py          # 启动脚本
+├── README.md                   # 本文档
+└── SETUP.md                    # 详细设置指南
 ```
 
 ## ⚙️ 配置说明
 
-### 实例配置
-
-每个实例包含：
+### 实例配置选项
 
 - `id` - 实例标识符（用于 send 命令）
-- `role` - 角色描述
+- `role` - 角色描述（提示词）
 - `autostart` - 是否自动启动
 
-支持 1-6 个实例，推荐 4-5 个。
+**支持 1-12 个实例**，推荐 3-5 个以获得最佳协作效果。
 
-### Pane 映射
+### 自定义实例
 
-启动时自动生成 `.cms_config/pane_mapping.json`：
-
-```json
-{
-  "default": 0,
-  "ui": 5,
-  "coder": 8,
-  "test": 12
-}
-```
-
-`send` 命令优先读取此文件，确保消息发送到正确的窗口。
-
-## 🛠️ 高级用法
-
-### 自定义实例数量
-
-在 `cms.config` 中添加或删除 instances 数组项：
+根据需求修改 `.cms_config/cms.config`：
 
 ```json
 {
-  "instances": [
-    {"id": "architect", "role": "system architect", "autostart": true},
-    {"id": "frontend", "role": "frontend dev", "autostart": true},
-    {"id": "backend", "role": "backend dev", "autostart": true},
-    {"id": "devops", "role": "DevOps engineer", "autostart": true}
-  ]
+  "claude": {
+    "instances": [
+      {"id": "architect", "role": "系统架构师", "autostart": true},
+      {"id": "frontend", "role": "前端开发", "autostart": true},
+      {"id": "backend", "role": "后端开发", "autostart": true},
+      {"id": "devops", "role": "运维工程师", "autostart": true}
+    ]
+  }
 }
 ```
 
-### 调试 Pane 映射
+### 映射文件
 
-查看映射文件：
+启动后自动生成 `.cms_config/tab_mapping.json`：
 
-```bash
-cat .cms_config/pane_mapping.json
+```json
+{
+  "tabs": {
+    "default": {"pane_id": "0", "tab_id": "0"},
+    "ui": {"pane_id": "1", "tab_id": "1"},
+    "coder": {"pane_id": "2", "tab_id": "2"},
+    "test": {"pane_id": "3", "tab_id": "3"}
+  }
+}
 ```
 
-手动测试发送：
+`send` 命令自动读取此文件进行消息路由。
 
+## 🚨 故障排除
+
+### 启动失败
+1. 确认在 **WezTerm** 终端中运行
+2. 检查 Python 版本 >= 3.8：`python --version`
+3. 确认 Claude CLI 已安装：`claude --version`
+
+### 消息发送失败
+1. 确认映射文件存在：`.cms_config/tab_mapping.json`
+2. 重新启动实例刷新映射
+3. 检查实例 ID 是否正确（区分大小写）
+
+### WezTerm 检测失败
+确保环境变量中有 `wezterm` 命令：
 ```bash
-wezterm cli list
-wezterm cli send-text --pane-id <PANE_ID> --no-paste "test message"
+wezterm --version
 ```
+
+## 💡 使用场景
+
+- **团队协作模拟** - 分配不同角色（前端、后端、测试等）
+- **任务分解** - 将复杂项目拆分给专门的实例
+- **代码审查** - 一个实例写代码，另一个审查
+- **学习辅助** - 一个实例讲解，另一个提问
+
+## 📝 注意事项
+
+- 首次运行需要在 WezTerm 终端中执行
+- 每个实例维护独立的会话文件
+- 映射文件会在每次启动时更新
+- 使用 `Ctrl+C` 可以退出某个实例
+
+---
+
+**最小核心版本** - 仅保留多实例启动和通信功能，适合快速上手使用。
 
 ## 🚨 故障排除
 
