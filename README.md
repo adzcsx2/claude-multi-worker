@@ -87,7 +87,7 @@ Edit `cms.config` to define your instances:
 
 **Run in WezTerm terminal:**
 ```bash
-python RUN.py
+python run.py
 ```
 
 The script will automatically:
@@ -121,18 +121,18 @@ python send test "Test the login flow"
 
 ```bash
 # 1. Assign tasks from default instance
-send ui "Design a modern dashboard interface"
-send coder "Implement data visualization components"
-send test "Write unit tests"
+python send ui "Design a modern dashboard interface"
+python send coder "Implement data visualization components"
+python send test "Write unit tests"
 
 # 2. UI design complete, notify developer
-send coder "UI design complete, files in /designs directory"
+python send coder "UI design complete, files in /designs directory"
 
 # 3. Development complete, notify tester
-send test "Feature implemented, please start testing"
+python send test "Feature implemented, please start testing"
 
 # 4. Testing complete, report back
-send default "All tests passed, ready for release"
+python send default "All tests passed, ready for release"
 ```
 
 ## 📂 Project Structure
@@ -144,7 +144,7 @@ claude-multi-starter/
 │   └── .claude-*-session       # Session files for each instance
 ├── lib/                        # Core library files
 ├── cms.config                  # Instance configuration
-├── RUN.py                      # Launch script
+├── run.py                      # Launch script
 ├── send                        # Communication script
 ├── README.md                   # This document
 └── README_CN.md                # Chinese documentation
@@ -245,7 +245,8 @@ sudo dnf install python3.12  # Fedora
 
 ## 📝 Notes
 
-- Must run in WezTerm terminal
+- Must run `python run.py` in WezTerm terminal
+- Use `python send <instance> "message"` for communication
 - Each instance maintains independent session files
 - Mapping file is updated on each launch
 - Use `Ctrl+C` to exit an instance
