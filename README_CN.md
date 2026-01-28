@@ -58,49 +58,6 @@ yay -S wezterm
 wezterm --version
 ```
 
-## ⚙️ 环境配置
-
-### 将 `bin` 添加到 PATH
-
-这样可以在任何位置直接运行 `send` 命令，无需指定完整路径。
-
-**Windows (PowerShell):**
-```powershell
-# 临时设置（仅当前会话）
-$env:PATH += ";E:\ai_project\claude-multi-starter\bin"
-
-# 永久设置（添加到 PowerShell 配置文件）
-Add-Content $PROFILE "`n`$env:PATH += ';E:\ai_project\claude-multi-starter\bin'"
-
-# 或通过系统环境变量设置：
-# 1. 在开始菜单搜索"环境变量"
-# 2. 点击"环境变量"
-# 3. 编辑"用户变量"中的"Path"
-# 4. 添加：E:\ai_project\claude-multi-starter\bin
-```
-
-**macOS/Linux (Bash/Zsh):**
-```bash
-# 添加到 ~/.bashrc 或 ~/.zshrc
-echo 'export PATH="$PATH:/path/to/claude-multi-starter/bin"' >> ~/.bashrc
-# 或者 Zsh
-echo 'export PATH="$PATH:/path/to/claude-multi-starter/bin"' >> ~/.zshrc
-
-# 重新加载配置
-source ~/.bashrc  # 或 source ~/.zshrc
-```
-
-**验证 PATH 配置:**
-```bash
-# Windows
-send
-
-# macOS/Linux  
-send
-```
-
-如果 PATH 配置正确，应该能看到使用说明。
-
 ## 🚀 快速开始
 
 ### 1. 配置实例
@@ -146,28 +103,18 @@ python RUN.py
 
 **Windows:**
 ```cmd
-# 使用绝对路径
-python bin\send default "分配任务给其他实例"
-python bin\send ui "设计登录页面"
-python bin\send coder "实现用户认证功能"
-python bin\send test "测试登录流程"
-
-# 如果 bin 已添加到 PATH
-send default "分配任务给其他实例"
-send ui "设计登录页面"
+python send default "分配任务给其他实例"
+python send ui "设计登录页面"
+python send coder "实现用户认证功能"
+python send test "测试登录流程"
 ```
 
 **macOS/Linux:**
 ```bash
-# 使用绝对路径
-python bin/send default "分配任务给其他实例"
-python bin/send ui "设计登录页面"
-python bin/send coder "实现用户认证功能"
-python bin/send test "测试登录流程"
-
-# 如果 bin 已添加到 PATH
-send default "分配任务给其他实例"
-send ui "设计登录页面"
+python send default "分配任务给其他实例"
+python send ui "设计登录页面"
+python send coder "实现用户认证功能"
+python send test "测试登录流程"
 ```
 
 ## 💡 使用示例
@@ -197,13 +144,13 @@ claude-multi-starter/
 ├── .cms_config/
 │   ├── tab_mapping.json        # 标签页映射（自动生成）
 │   └── .claude-*-session       # 各实例会话文件
-├── bin/
-│   ├── send                    # 通信命令（Linux/Mac）
-│   └── send.cmd                # 通信命令（Windows）
 ├── lib/                        # 核心库文件
 ├── cms.config                  # 实例配置文件
 ├── RUN.py                      # 启动脚本
-└── README.md                   # 本文档
+├── send                        # 通信脚本（Linux/Mac）
+├── send.cmd                    # 通信脚本（Windows）
+├── README.md                   # 英文文档
+└── README_CN.md                # 中文文档
 ```
 
 ## ⚙️ 配置说明

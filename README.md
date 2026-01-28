@@ -58,49 +58,6 @@ Verify installation:
 wezterm --version
 ```
 
-## ⚙️ Environment Setup
-
-### Adding `bin` to PATH
-
-This allows you to run `send` from anywhere without specifying the full path.
-
-**Windows (PowerShell):**
-```powershell
-# Temporary (current session only)
-$env:PATH += ";E:\ai_project\claude-multi-starter\bin"
-
-# Permanent (add to PowerShell profile)
-Add-Content $PROFILE "`n`$env:PATH += ';E:\ai_project\claude-multi-starter\bin'"
-
-# Or use System Environment Variables:
-# 1. Search "Environment Variables" in Start Menu
-# 2. Click "Environment Variables"
-# 3. Edit "Path" under "User variables"
-# 4. Add: E:\ai_project\claude-multi-starter\bin
-```
-
-**macOS/Linux (Bash/Zsh):**
-```bash
-# Add to ~/.bashrc or ~/.zshrc
-echo 'export PATH="$PATH:/path/to/claude-multi-starter/bin"' >> ~/.bashrc
-# or for Zsh
-echo 'export PATH="$PATH:/path/to/claude-multi-starter/bin"' >> ~/.zshrc
-
-# Reload configuration
-source ~/.bashrc  # or source ~/.zshrc
-```
-
-**Verify PATH setup:**
-```bash
-# Windows
-send
-
-# macOS/Linux
-send
-```
-
-You should see the usage message if PATH is configured correctly.
-
 ## 🚀 Quick Start
 
 ### 1. Configure Instances
@@ -144,28 +101,18 @@ The script will automatically:
 
 **Windows:**
 ```cmd
-# Using absolute path
-python bin\send default "Assign tasks to other instances"
-python bin\send ui "Design the login page"
-python bin\send coder "Implement user authentication"
-python bin\send test "Test the login flow"
-
-# If bin is in PATH
-send default "Assign tasks to other instances"
-send ui "Design the login page"
+python send default "Assign tasks to other instances"
+python send ui "Design the login page"
+python send coder "Implement user authentication"
+python send test "Test the login flow"
 ```
 
 **macOS/Linux:**
 ```bash
-# Using absolute path
-python bin/send default "Assign tasks to other instances"
-python bin/send ui "Design the login page"
-python bin/send coder "Implement user authentication"
-python bin/send test "Test the login flow"
-
-# If bin is in PATH
-send default "Assign tasks to other instances"
-send ui "Design the login page"
+python send default "Assign tasks to other instances"
+python send ui "Design the login page"
+python send coder "Implement user authentication"
+python send test "Test the login flow"
 ```
 
 ## 💡 Usage Example
@@ -195,12 +142,11 @@ claude-multi-starter/
 ├── .cms_config/
 │   ├── tab_mapping.json        # Tab mappings (auto-generated)
 │   └── .claude-*-session       # Session files for each instance
-├── bin/
-│   ├── send                    # Communication script (macOS/Linux)
-│   └── send.cmd                # Communication script (Windows)
 ├── lib/                        # Core library files
 ├── cms.config                  # Instance configuration
 ├── RUN.py                      # Launch script
+├── send                        # Communication script (macOS/Linux)
+├── send.cmd                    # Communication script (Windows)
 ├── README.md                   # This document
 └── README_CN.md                # Chinese documentation
 ```
