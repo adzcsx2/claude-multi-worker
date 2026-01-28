@@ -2,17 +2,17 @@
   "work_dir": "E:\\ai_project\\claude-multi-starter",
   "tabs": {
     "c1": {
-      "pane_id": "10",
+      "pane_id": "0",
       "role": "Assistant (c1)"
     },
     "c2": {
-      "pane_id": "11",
+      "pane_id": "1",
       "role": "Assistant (c2)"
     },
     "c3": {
-      "pane_id": "12",
+      "pane_id": "2",
       "role": "Assistant (c3)"
     }
   },
-  "created_at": 1769596086.5409408
+  "created_at": 1769596593.4341602
 }
