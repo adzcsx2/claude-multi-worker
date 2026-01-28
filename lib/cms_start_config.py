@@ -229,9 +229,15 @@ def _read_config(path: Path) -> dict:
 
 
 def _config_paths(work_dir: Path) -> Tuple[Path, Path]:
-    project = Path(work_dir) / ".cms_config" / CONFIG_FILENAME
+    # 优先使用根目录的配置文件，然后是 .cms_config 目录
+    project_root = Path(work_dir) / CONFIG_FILENAME
+    project_cms = Path(work_dir) / ".cms_config" / CONFIG_FILENAME
     global_path = Path.home() / ".cms" / CONFIG_FILENAME
-    return project, global_path
+    
+    # 返回第一个存在的配置文件
+    if project_root.exists():
+        return project_root, global_path
+    return project_cms, global_path
 
 
 def load_start_config(work_dir: Path) -> StartConfig:

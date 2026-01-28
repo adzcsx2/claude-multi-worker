@@ -131,6 +131,7 @@ def _auto_load_claude_instances():
         from pathlib import Path
 
         config_paths = [
+            Path.cwd() / "cms.config",
             Path.cwd() / ".cms_config" / "cms.config",
             Path.home() / ".cms" / "cms.config"
         ]

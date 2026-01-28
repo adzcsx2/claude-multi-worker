@@ -6,7 +6,7 @@
 
 - 🚀 **多实例启动** - 一键在 WezTerm 标签页中启动多个 Claude 实例
 - 💬 **实例通信** - 使用 `send` 命令在实例间发送消息
-- ⚙️ **灵活配置** - 通过 `.cms_config/cms.config` 自定义实例数量和角色
+- ⚡️ **灵活配置** - 通过 `cms.config` 自定义实例数量和角色
 - 📍 **自动映射** - 自动保存实例到标签页的映射关系
 
 ## 🔧 环境要求
@@ -19,7 +19,7 @@
 
 ### 1. 配置实例
 
-编辑 `.cms_config/cms.config` 定义你需要的实例：
+编辑 `cms.config` 定义你需要的实例：
 
 ```json
 {
@@ -96,13 +96,13 @@ bin\send default "所有测试通过，可以发布"
 ```
 claude-multi-starter/
 ├── .cms_config/
-│   ├── cms.config              # 实例配置
 │   ├── tab_mapping.json        # 标签页映射（自动生成）
 │   └── .claude-*-session       # 各实例会话文件
 ├── bin/
 │   ├── send                    # 通信命令（Linux/Mac）
 │   └── send.cmd                # 通信命令（Windows）
 ├── lib/                        # 核心库文件
+├── cms.config                  # 实例配置文件
 ├── START_MULTI_TAB.py          # 启动脚本
 ├── README.md                   # 本文档
 └── SETUP.md                    # 详细设置指南
@@ -120,7 +120,7 @@ claude-multi-starter/
 
 ### 自定义实例
 
-根据需求修改 `.cms_config/cms.config`：
+根据需求修改 `cms.config`：
 
 ```json
 {

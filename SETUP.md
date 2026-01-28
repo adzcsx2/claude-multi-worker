@@ -20,7 +20,7 @@
 
 ### 3. 配置实例
 
-编辑 `.cms_config/cms.config` 文件，根据需要添加或删除实例：
+编辑根目录的 `cms.config` 文件，根据需要添加或删除实例：
 
 ```json
 {
@@ -71,12 +71,10 @@ Pane ID按照配置文件中的instances数组顺序映射：
 
 ### 文件说明
 
-- `start.bat` - 启动脚本（调用start-dynamic.py）
-- `start-dynamic.py` - 动态布局和启动逻辑
-- `send_dynamic.py` - 发送消息到指定实例
-- `send_to_pane.py` - 底层WezTerm pane通信
-- `install-skills.ps1` - Skills自动安装脚本
-- `.cms_config/cms.config` - 实例配置文件
+- `START_MULTI_TAB.py` - 启动脚本
+- `cms.config` - 实例配置文件（根目录）
+- `bin/send` - 发送消息到指定实例
+- `.cms_config/` - 会话文件和映射文件目录
 
 ## 故障排除
 
@@ -95,7 +93,7 @@ Pane ID按照配置文件中的instances数组顺序映射：
 ### 布局混乱
 
 1. 关闭所有pane重新启动
-2. 检查 `.cms_config/cms.config` 配置是否正确
+2. 检查 `cms.config` 配置是否正确
 3. 实例数量不要超过12个
 
 ## 项目迁移

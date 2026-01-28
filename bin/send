@@ -75,8 +75,8 @@ def load_config():
 
     # 降级方案：从cms.config读取顺序映射
     config_paths = [
-        work_dir / ".cms_config" / "cms.config",
         work_dir / "cms.config",
+        work_dir / ".cms_config" / "cms.config",
         Path.home() / ".cms" / "cms.config",
     ]
 
