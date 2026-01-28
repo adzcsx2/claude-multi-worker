@@ -45,11 +45,13 @@
 在 **WezTerm 终端**中运行：
 
 **默认启动（c1, c2, c3）：**
+
 ```bash
 python START_MULTI_TAB.py
 ```
 
 **指定实例启动：**
+
 ```bash
 # 使用配置文件中的实例
 python START_MULTI_TAB.py ui coder test
@@ -62,6 +64,7 @@ python START_MULTI_TAB.py --bypass ui coder test
 ```
 
 脚本会自动：
+
 - 在 WezTerm 中创建多个标签页
 - 每个标签页启动一个 Claude 实例
 - 保存映射关系到 `.cms_config/tab_mapping.json`
@@ -103,6 +106,7 @@ bin/send test "测试登录流程"
 ### 典型工作流
 
 **使用默认实例（c1, c2, c3）：**
+
 ```bash
 # 1. 在 c1 实例分配任务
 bin\send c1 "分析用户需求，提供技术方案"
@@ -116,6 +120,7 @@ bin\send c1 "c3 测试通过，可以发布"
 ```
 
 **使用配置实例（ui, coder, test）：**
+
 ```bash
 # 1. 在 default 实例分配任务
 bin\send ui "设计一个现代化的仪表板界面"
