@@ -80,13 +80,10 @@ def main():
         return 1
 
     try:
-        # 使用 WezTerm CLI 发送文本
-        # 自动添加换行符以模拟按下回车键提交
-        message_with_newline = message + "\n"
-        
-        # 增加超时时间，避免在某些情况下超时
-        result = subprocess.run(
-            [wezterm_bin, "cli", "send-text", "--pane-id", str(pane_id), "--no-paste", message_with_newline],
+        # 使用 WezTerm CLI 发送文本 - 两步策略
+        # 第一步: 发送消息内容
+        result1 = subprocess.run(
+            [wezterm_bin, "cli", "send-text", "--pane-id", str(pane_id), "--no-paste", message],
             capture_output=True,
             text=True,
             encoding='utf-8',
@@ -94,11 +91,24 @@ def main():
             timeout=5,
         )
         
-        if result.returncode == 0:
+        if result1.returncode != 0:
+            print(f"[ERROR] Failed to send message: {result1.stderr}")
+            return 1
+        
+        # 第二步: 发送回车键提交
+        result2 = subprocess.run(
+            [wezterm_bin, "cli", "send-text", "--pane-id", str(pane_id), "--no-paste"],
+            input=b"\r",  # 通过 stdin 发送回车键
+            capture_output=True,
+            timeout=5,
+        )
+        
+        if result2.returncode == 0:
             print(f"[OK] Message sent and submitted to {instance} (pane {pane_id}): '{message}'")
             return 0
         else:
-            print(f"[ERROR] Failed to send message: {result.stderr}")
+            stderr_msg = result2.stderr.decode('utf-8', errors='ignore') if result2.stderr else ""
+            print(f"[ERROR] Failed to submit: {stderr_msg}")
             return 1
 
     except subprocess.TimeoutExpired:
