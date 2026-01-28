@@ -138,16 +138,18 @@ claude-multi-starter/
 
 ```json
 {
+  "work_dir": "/path/to/project",
   "tabs": {
-    "default": { "pane_id": "0", "tab_id": "0" },
-    "ui": { "pane_id": "1", "tab_id": "1" },
-    "coder": { "pane_id": "2", "tab_id": "2" },
-    "test": { "pane_id": "3", "tab_id": "3" }
-  }
+    "default": { "pane_id": "0", "role": "general coordinator" },
+    "ui": { "pane_id": "1", "role": "UI/UX designer" },
+    "coder": { "pane_id": "2", "role": "developer" },
+    "test": { "pane_id": "3", "role": "QA engineer" }
+  },
+  "created_at": 1234567890.123
 }
 ```
 
-`send` 命令自动读取此文件进行消息路由。
+`send` 命令从此文件读取 pane ID 来将消息路由到特定标签页。
 
 ## 🚨 故障排除
 
@@ -176,16 +178,19 @@ wezterm --version
 如果遇到语法错误，请升级 Python：
 
 **Windows:**
+
 ```powershell
 winget install Python.Python.3.12
 ```
 
 **macOS:**
+
 ```bash
 brew install python@3.12
 ```
 
 **Linux:**
+
 ```bash
 sudo apt install python3.12  # Ubuntu/Debian
 sudo dnf install python3.12  # Fedora
@@ -202,9 +207,11 @@ sudo dnf install python3.12  # Fedora
 
 - 必须在 WezTerm 终端中运行 `python run.py`
 - 使用 `python send <实例> "消息"` 进行通信
+- 每个标签页包含一个 Claude 实例，具有独特的 pane ID
 - 每个实例维护独立的会话文件
-- 映射文件会在每次启动时更新
+- 映射文件在每次启动时自动生成
 - 使用 `Ctrl+C` 可以退出某个实例
+- 支持 c1-c12 简写：`python send c1 "消息"`
 
 ## 📄 许可证
 

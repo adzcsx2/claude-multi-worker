@@ -48,11 +48,13 @@ Edit `cms.config` to define your instances:
 ### 2. Launch Instances
 
 **Run in WezTerm terminal:**
+
 ```bash
 python run.py
 ```
 
 The script will automatically:
+
 - Read configuration from `cms.config`
 - Launch all instances with `autostart: true`
 - Create multiple WezTerm tabs
@@ -136,16 +138,18 @@ Auto-generated at `.cms_config/tab_mapping.json`:
 
 ```json
 {
+  "work_dir": "/path/to/project",
   "tabs": {
-    "default": { "pane_id": "0", "tab_id": "0" },
-    "ui": { "pane_id": "1", "tab_id": "1" },
-    "coder": { "pane_id": "2", "tab_id": "2" },
-    "test": { "pane_id": "3", "tab_id": "3" }
-  }
+    "default": { "pane_id": "0", "role": "general coordinator" },
+    "ui": { "pane_id": "1", "role": "UI/UX designer" },
+    "coder": { "pane_id": "2", "role": "developer" },
+    "test": { "pane_id": "3", "role": "QA engineer" }
+  },
+  "created_at": 1234567890.123
 }
 ```
 
-The `send` command reads this file for message routing.
+The `send` command reads pane IDs from this file to route messages to specific tabs.
 
 ## 🚨 Troubleshooting
 
@@ -174,16 +178,19 @@ wezterm --version
 If you see syntax errors, upgrade Python:
 
 **Windows:**
+
 ```powershell
 winget install Python.Python.3.12
 ```
 
 **macOS:**
+
 ```bash
 brew install python@3.12
 ```
 
 **Linux:**
+
 ```bash
 sudo apt install python3.12  # Ubuntu/Debian
 sudo dnf install python3.12  # Fedora
@@ -200,9 +207,11 @@ sudo dnf install python3.12  # Fedora
 
 - Must run `python run.py` in WezTerm terminal
 - Use `python send <instance> "message"` for communication
+- Each tab contains one Claude instance with a unique pane ID
 - Each instance maintains independent session files
-- Mapping file is updated on each launch
+- Mapping file is auto-generated on each launch
 - Use `Ctrl+C` to exit an instance
+- Supports c1-c12 shorthand: `python send c1 "message"`
 
 ## 📄 License
 
