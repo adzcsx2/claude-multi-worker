@@ -17,7 +17,12 @@ def find_wezterm():
     if not wezterm:
         # 尝试常见安装路径
         common_paths = [
-            Path.home() / "AppData" / "Local" / "Microsoft" / "WindowsApps" / "wezterm.exe",
+            Path.home()
+            / "AppData"
+            / "Local"
+            / "Microsoft"
+            / "WindowsApps"
+            / "wezterm.exe",
             Path("C:/Program Files/WezTerm/wezterm.exe"),
         ]
         for path in common_paths:
@@ -83,18 +88,26 @@ def main():
         # 使用 WezTerm CLI 发送文本 - 两步策略
         # 第一步: 发送消息内容
         result1 = subprocess.run(
-            [wezterm_bin, "cli", "send-text", "--pane-id", str(pane_id), "--no-paste", message],
+            [
+                wezterm_bin,
+                "cli",
+                "send-text",
+                "--pane-id",
+                str(pane_id),
+                "--no-paste",
+                message,
+            ],
             capture_output=True,
             text=True,
-            encoding='utf-8',
-            errors='ignore',
+            encoding="utf-8",
+            errors="ignore",
             timeout=5,
         )
-        
+
         if result1.returncode != 0:
             print(f"[ERROR] Failed to send message: {result1.stderr}")
             return 1
-        
+
         # 第二步: 发送回车键提交
         result2 = subprocess.run(
             [wezterm_bin, "cli", "send-text", "--pane-id", str(pane_id), "--no-paste"],
@@ -102,12 +115,18 @@ def main():
             capture_output=True,
             timeout=5,
         )
-        
+
         if result2.returncode == 0:
-            print(f"[OK] Message sent and submitted to {instance} (pane {pane_id}): '{message}'")
+            print(
+                f"[OK] Message sent and submitted to {instance} (pane {pane_id}): '{message}'"
+            )
             return 0
         else:
-            stderr_msg = result2.stderr.decode('utf-8', errors='ignore') if result2.stderr else ""
+            stderr_msg = (
+                result2.stderr.decode("utf-8", errors="ignore")
+                if result2.stderr
+                else ""
+            )
             print(f"[ERROR] Failed to submit: {stderr_msg}")
             return 1
 

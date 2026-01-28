@@ -89,7 +89,7 @@ def spawn_new_tab(wezterm_bin, cwd, instance_id):
                     timeout=5,
                 )
                 print(f"[DEBUG] Send-text return code: {result2.returncode}")
-                
+
                 return pane_id
             return None
         else:
@@ -173,7 +173,7 @@ def main():
         instances_arg = "c1,c2,c3"
     else:
         instances_arg = sys.argv[1]
-    
+
     instance_ids = [inst.strip() for inst in instances_arg.split(",") if inst.strip()]
 
     print(f"[*] Will create {len(instance_ids)} tabs for: {', '.join(instance_ids)}")
@@ -228,7 +228,7 @@ def main():
             # 使用 wezterm start 直接启动带命令的第一个标签页
             first_instance = instance_ids[0]
             spec = all_instances[first_instance]
-            
+
             # 启动 WezTerm 并在第一个标签页运行 pwsh（等待命令）
             result = subprocess.Popen(
                 [
@@ -239,14 +239,14 @@ def main():
                     "pwsh",
                     "-NoExit",
                     "-Command",
-                    f"Write-Host '[{first_instance}] Ready. Starting Claude...'; claude --dangerously-skip-permissions"
+                    f"Write-Host '[{first_instance}] Ready. Starting Claude...'; claude --dangerously-skip-permissions",
                 ],
             )
 
             print(f"[+] WezTerm 窗口已启动，第一个标签页: {first_instance}")
             print("[*] 等待 WezTerm 初始化...")
             time.sleep(4)  # 等待 WezTerm 完全启动并准备好 CLI
-            
+
             # 验证 CLI 是否可用
             max_retries = 5
             cli_ready = False
@@ -265,11 +265,11 @@ def main():
                     pass
                 print(f"[*] 等待 CLI 就绪... ({retry+1}/{max_retries})")
                 time.sleep(1)
-            
+
             if not cli_ready:
                 print("[!] WezTerm CLI 未就绪，无法继续")
                 return 1
-            
+
             # 获取第一个窗格的 pane_id
             list_result = subprocess.run(
                 [wezterm_bin, "cli", "list", "--format", "json"],
@@ -277,7 +277,7 @@ def main():
                 text=True,
                 timeout=5,
             )
-            
+
             first_pane_id = None
             if list_result.returncode == 0:
                 panes = []
@@ -289,28 +289,32 @@ def main():
                             pass
                 if panes:
                     first_pane_id = str(panes[0].get("pane_id", ""))
-            
+
             instance_tabs = {}
-            
+
             # 设置第一个标签页
             if first_pane_id:
-                set_tab_title(wezterm_bin, first_pane_id, f"{first_instance} - {spec.role}")
+                set_tab_title(
+                    wezterm_bin, first_pane_id, f"{first_instance} - {spec.role}"
+                )
                 instance_tabs[first_instance] = {
                     "pane_id": first_pane_id,
                     "role": spec.role,
                 }
-                print(f"[+] 第一个标签页已配置: {first_instance} (pane {first_pane_id})")
-            
+                print(
+                    f"[+] 第一个标签页已配置: {first_instance} (pane {first_pane_id})"
+                )
+
             # 为其余实例创建标签页
             for i, inst_id in enumerate(instance_ids[1:], 1):
                 spec = all_instances[inst_id]
-                print(f"[*] 创建标签页 {i+1}/{len(instance_ids)}: {inst_id} - {spec.role}")
+                print(
+                    f"[*] 创建标签页 {i+1}/{len(instance_ids)}: {inst_id} - {spec.role}"
+                )
 
                 pane_id = spawn_new_tab(wezterm_bin, work_dir, inst_id)
                 if pane_id:
-                    set_tab_title(
-                        wezterm_bin, pane_id, f"{inst_id} - {spec.role}"
-                    )
+                    set_tab_title(wezterm_bin, pane_id, f"{inst_id} - {spec.role}")
                     instance_tabs[inst_id] = {
                         "pane_id": pane_id,
                         "role": spec.role,
