@@ -9,6 +9,7 @@ tests/
 .codex-session
 .gemini-session
 .claude-session
+.claude-*-session
 .opencode-session
 opencode.json
 .claude/
