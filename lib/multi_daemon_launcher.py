@@ -27,19 +27,26 @@ sys.path.insert(0, str(script_dir / "lib"))
 
 from cms_start_config import load_start_config, ClaudeInstanceConfig
 from providers import get_claude_instance, list_claude_instances
-from multi_instance_layout import calculate_grid_layout, get_pane_direction, get_pane_percent
+from multi_instance_layout import (
+    calculate_grid_layout,
+    get_pane_direction,
+    get_pane_percent,
+)
 
 
 @dataclass
 class ClaudeInstanceLaunch:
     """Specification for launching a Claude instance"""
+
     instance_id: str
     role: str
     title: str
     env_overrides: dict
 
 
-def parse_claude_instances(providers: List[str], config_path: Optional[Path] = None) -> Tuple[List[str], List[str]]:
+def parse_claude_instances(
+    providers: List[str], config_path: Optional[Path] = None
+) -> Tuple[List[str], List[str]]:
     """
     Parse provider list to extract Claude instances.
 
@@ -74,14 +81,19 @@ def parse_claude_instances(providers: List[str], config_path: Optional[Path] = N
             instances_spec = parts[1].strip()
             if instances_spec:
                 # Parse comma-separated instances
-                specified = [inst.strip() for inst in instances_spec.split(",") if inst.strip()]
+                specified = [
+                    inst.strip() for inst in instances_spec.split(",") if inst.strip()
+                ]
 
                 # Validate instances exist
                 for inst_id in specified:
                     if inst_id in all_instances:
                         claude_instances.append(inst_id)
                     else:
-                        print(f"WARNING: Claude instance '{inst_id}' not found in config", file=sys.stderr)
+                        print(
+                            f"WARNING: Claude instance '{inst_id}' not found in config",
+                            file=sys.stderr,
+                        )
 
         # Check for standalone "claude"
         elif provider_lower == "claude":
@@ -133,7 +145,7 @@ def create_instance_launch_specs(instance_ids: List[str]) -> List[ClaudeInstance
             instance_id=instance_id,
             role=spec.role,
             title=title,
-            env_overrides=env_overrides
+            env_overrides=env_overrides,
         )
         launches.append(launch)
 
