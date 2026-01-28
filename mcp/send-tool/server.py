@@ -21,7 +21,7 @@ SERVER_INFO = {"name": "send-tool", "version": "0.1.0"}
 TOOL_DEFS = [
     {
         "name": "send_message",
-        "description": "Send a message to another Claude instance and automatically execute it (press Enter). IMPORTANT: Always detect if message contains non-ASCII characters (Chinese, emoji, etc.). If yes, automatically base64-encode it and use message_base64 parameter instead of message parameter. Example: if message='你好', then use message_base64='5L2g5aW9' (base64 of '你好'). For ASCII-only messages, use message parameter directly.",
+        "description": "Send a message to another Claude instance and automatically execute it (press Enter). Simply provide the message parameter with any text (ASCII or non-ASCII, Chinese, emoji, etc. are all supported). The server will handle encoding automatically.",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -31,14 +31,10 @@ TOOL_DEFS = [
                 },
                 "message": {
                     "type": "string",
-                    "description": "Message content to send (ASCII only). Do NOT use this for non-ASCII characters.",
-                },
-                "message_base64": {
-                    "type": "string",
-                    "description": "Base64-encoded message content. Use this automatically when message contains non-ASCII characters (Chinese, emoji, etc.).",
+                    "description": "Message content to send. Supports any characters including Chinese, emoji, etc.",
                 },
             },
-            "required": ["instance"],
+            "required": ["instance", "message"],
         },
     }
 ]
@@ -72,52 +68,59 @@ def _tool_error(message: str) -> dict[str, Any]:
 
 def _fix_encoding(text: str) -> str:
     """
-    Try to fix encoding issues caused by Claude CLI MCP transmission.
-    UTF-8 bytes may have been incorrectly decoded as Latin-1/CP1252.
+    Fix Chinese text that was UTF-8 but incorrectly decoded as GBK by Claude CLI.
+    This is a Windows-specific issue where UTF-8 bytes are interpreted as GBK.
     """
     try:
-        # Try to encode as Latin-1 and decode as UTF-8
-        # This reverses the incorrect Latin-1 interpretation
-        fixed = text.encode("latin-1").decode("utf-8")
+        # Step 1: Encode the garbled text back to GBK bytes
+        # Use 'surrogateescape' to handle the invalid surrogate characters
+        gbk_bytes = text.encode("gbk", errors="surrogateescape")
+
+        # Step 2: Decode those bytes as UTF-8 (their original encoding)
+        fixed = gbk_bytes.decode("utf-8")
         return fixed
-    except (UnicodeDecodeError, UnicodeEncodeError):
-        # If fixing fails, return original
+    except Exception:
+        # If fix fails, return original
         return text
 
 
 def _handle_send_message(args: dict[str, Any]) -> dict[str, Any]:
     """Handle send_message tool call"""
     instance = str(args.get("instance", "")).strip()
-
-    # Check for base64-encoded message first (better for non-ASCII)
-    message_base64 = args.get("message_base64", "").strip()
-    if message_base64:
-        try:
-            import base64
-
-            message = base64.b64decode(message_base64).decode("utf-8")
-        except Exception as e:
-            return _tool_error(f"Error: Invalid base64 message: {e}")
-    else:
-        message = str(args.get("message", "")).strip()
-        # Try to fix encoding issues for regular message
-        message = _fix_encoding(message)
+    message = str(args.get("message", "")).strip()
 
     if not instance or not message:
-        return _tool_error(
-            "Error: Both 'instance' and 'message' (or 'message_base64') are required"
-        )
+        return _tool_error("Error: Both 'instance' and 'message' are required")
 
     try:
-        # Call send script directly with message
+        # Fix encoding: Claude CLI decodes UTF-8 as GBK on Windows
+        fixed_message = _fix_encoding(message)
+
+        # Debug: write what we received to a log file
         import os
+
+        debug_log = Path(__file__).parent / "debug.log"
+        with open(debug_log, "a", encoding="utf-8") as f:
+            f.write(f"\n=== New Message ===\n")
+            f.write(f"Original message repr: {repr(message)}\n")
+            f.write(f"Fixed message: {repr(fixed_message)}\n")
+
+        # Use base64 encoding to safely pass message as command-line argument
+        import base64
+
+        message_bytes = fixed_message.encode("utf-8")
+        message_b64 = base64.b64encode(message_bytes).decode("ascii")
+
+        with open(debug_log, "a", encoding="utf-8") as f:
+            f.write(f"UTF-8 bytes: {message_bytes.hex()}\n")
+            f.write(f"Base64 encoded: {message_b64}\n")
 
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONUTF8"] = "1"
 
         result = subprocess.run(
-            ["python", str(send_script), instance, message],
+            ["python", str(send_script), instance, "--base64", message_b64],
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -130,6 +133,7 @@ def _handle_send_message(args: dict[str, Any]) -> dict[str, Any]:
         else:
             error_msg = result.stderr.strip() or result.stdout.strip() or "Send failed"
             return _tool_error(f"Error: {error_msg}")
+
     except subprocess.TimeoutExpired:
         return _tool_error("Error: Send command timed out")
     except Exception as e:

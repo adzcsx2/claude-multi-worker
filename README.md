@@ -32,11 +32,9 @@ Edit `cms.config` to define your instances:
 {
   "providers": ["claude"],
   "flags": {
-    "auto": true,
     "claudeArgs": ["--dangerously-skip-permissions"]
   },
   "claude": {
-    "enabled": true,
     "instances": [
       { "id": "default", "role": "general coordinator", "autostart": true },
       { "id": "ui", "role": "UI/UX designer", "autostart": true },
@@ -96,20 +94,20 @@ Claude will automatically use the `send_message` tool to communicate with other 
 
 ### Typical Workflow
 
-```bash
-# 1. Assign tasks from default instance
-python send ui "Design a modern dashboard interface"
-python send coder "Implement data visualization components"
-python send test "Write unit tests"
+```
+# 1. In default instance, assign tasks:
+"Send a message to ui: Design a modern dashboard interface"
+"Tell coder to implement data visualization components"
+"Ask test to write unit tests"
 
-# 2. UI design complete, notify developer
-python send coder "UI design complete, files in /designs directory"
+# 2. In ui instance, after design complete:
+"Tell coder: UI design complete, files in /designs directory"
 
-# 3. Development complete, notify tester
-python send test "Feature implemented, please start testing"
+# 3. In coder instance, after development complete:
+"Tell test: Feature implemented, please start testing"
 
-# 4. Testing complete, report back
-python send default "All tests passed, ready for release"
+# 4. In test instance, after testing complete:
+"Report to default: All tests passed, ready for release"
 ```
 
 ## 📂 Project Structure
@@ -178,8 +176,7 @@ The `send` command reads pane IDs from this file to route messages to specific t
 ### Launch Failure
 
 1. Confirm running in **WezTerm** terminal
-2. Check Python version >= 3.10: `python --version`
-3. Verify Claude CLI is installed: `claude --version`
+2. Verify Claude CLI is installed: `claude --version`
 
 ### Message Send Failure
 
@@ -193,29 +190,6 @@ Ensure `wezterm` is in PATH:
 
 ```bash
 wezterm --version
-```
-
-### Python Version Issues
-
-If you see syntax errors, upgrade Python:
-
-**Windows:**
-
-```powershell
-winget install Python.Python.3.12
-```
-
-**macOS:**
-
-```bash
-brew install python@3.12
-```
-
-**Linux:**
-
-```bash
-sudo apt install python3.12  # Ubuntu/Debian
-sudo dnf install python3.12  # Fedora
 ```
 
 ## 💡 Use Cases

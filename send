@@ -82,8 +82,18 @@ def main():
 
     instance = sys.argv[1].lower()
 
+    # Check for base64-encoded message (from MCP server)
+    if len(sys.argv) >= 4 and sys.argv[2] == "--base64":
+        import base64
+
+        try:
+            message_bytes = base64.b64decode(sys.argv[3])
+            message = message_bytes.decode("utf-8", errors="replace").strip()
+        except Exception as e:
+            print(f"Error: Could not decode base64 message: {e}", file=sys.stderr)
+            return 1
     # Check if reading from file (backward compatibility)
-    if len(sys.argv) >= 4 and sys.argv[2] == "--file":
+    elif len(sys.argv) >= 4 and sys.argv[2] == "--file":
         file_path = sys.argv[3]
         try:
             # Read as binary and decode UTF-8 to avoid encoding issues
@@ -125,7 +135,7 @@ def main():
         pane_id = role_map[instance]
 
     try:
-        # Send message to WezTerm pane
+        # Send message to WezTerm pane via stdin (better encoding support)
         subprocess.run(
             [
                 "wezterm",
@@ -134,8 +144,8 @@ def main():
                 "--pane-id",
                 pane_id,
                 "--no-paste",
-                message,
             ],
+            input=message.encode("utf-8"),
             check=True,
             capture_output=True,
         )

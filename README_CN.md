@@ -32,11 +32,9 @@
 {
   "providers": ["claude"],
   "flags": {
-    "auto": true,
     "claudeArgs": ["--dangerously-skip-permissions"]
   },
   "claude": {
-    "enabled": true,
     "instances": [
       { "id": "default", "role": "general coordinator", "autostart": true },
       { "id": "ui", "role": "UI/UX designer", "autostart": true },
@@ -96,20 +94,20 @@ Claude 会自动使用 `send_message` 工具与其他实例通信。
 
 ### 典型工作流
 
-```bash
-# 1. 在 default 实例分配任务
-python send ui "设计一个现代化的仪表板界面"
-python send coder "实现数据可视化组件"
-python send test "编写单元测试"
+```
+# 1. 在 default 实例中分配任务：
+"给 ui 发送消息：设计一个现代化的仪表板界面"
+"让 coder 实现数据可视化组件"
+"让 test 编写单元测试"
 
-# 2. UI 设计完成后通知开发
-python send coder "UI 设计已完成，文件在 /designs 目录"
+# 2. 在 ui 实例中，设计完成后：
+"告诉 coder：UI 设计已完成，文件在 /designs 目录"
 
-# 3. 开发完成后通知测试
-python send test "功能已实现，请开始测试"
+# 3. 在 coder 实例中，开发完成后：
+"告诉 test：功能已实现，请开始测试"
 
-# 4. 测试完成后汇报
-python send default "所有测试通过，可以发布"
+# 4. 在 test 实例中，测试完成后：
+"向 default 汇报：所有测试通过，可以发布"
 ```
 
 ## 📂 项目结构
@@ -178,8 +176,7 @@ claude-multi-starter/
 ### 启动失败
 
 1. 确认在 **WezTerm** 终端中运行
-2. 检查 Python 版本 >= 3.10：`python --version`
-3. 确认 Claude CLI 已安装：`claude --version`
+2. 确认 Claude CLI 已安装：`claude --version`
 
 ### 消息发送失败
 
@@ -193,29 +190,6 @@ claude-multi-starter/
 
 ```bash
 wezterm --version
-```
-
-### Python 版本问题
-
-如果遇到语法错误，请升级 Python：
-
-**Windows:**
-
-```powershell
-winget install Python.Python.3.12
-```
-
-**macOS:**
-
-```bash
-brew install python@3.12
-```
-
-**Linux:**
-
-```bash
-sudo apt install python3.12  # Ubuntu/Debian
-sudo dnf install python3.12  # Fedora
 ```
 
 ## 💡 使用场景
