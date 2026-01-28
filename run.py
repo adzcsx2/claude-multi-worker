@@ -75,8 +75,30 @@ def spawn_new_tab(wezterm_bin, cwd, instance_id, claude_args=""):
             print(f"[DEBUG] Created tab with pane: {pane_id}")
 
             if pane_id:
-                # Start Claude in new tab
+                # Set up send function, then start Claude
                 time.sleep(0.5)
+                
+                # Step 1: Define send function
+                send_script_path = str(cwd / "send").replace("\\", "/")
+                setup_cmd = f'function send {{ python "{send_script_path}" $args }}'
+                print(f"[DEBUG] Setting up send function in pane {pane_id}")
+                
+                subprocess.run(
+                    [
+                        wezterm_bin,
+                        "cli",
+                        "send-text",
+                        "--pane-id",
+                        pane_id,
+                        setup_cmd + "\r",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                )
+                time.sleep(0.3)
+                
+                # Step 2: Start Claude
                 send_cmd = f"claude{' ' + claude_args if claude_args else ''}"
                 print(f"[DEBUG] Sending to pane {pane_id}: {send_cmd}")
 
@@ -439,8 +461,28 @@ def main():
 
         # Start Claude in current pane
         print(f"[*] Starting Claude in current pane...")
-        claude_cmd = f"claude{' ' + claude_args if claude_args else ''}"
         if current_pane_id:
+            # Step 1: Define send function
+            send_script_path = str(work_dir / "send").replace("\\", "/")
+            setup_cmd = f'function send {{ python "{send_script_path}" $args }}'
+            print(f"[DEBUG] Setting up send function in current pane")
+            
+            subprocess.run(
+                [
+                    wezterm_bin,
+                    "cli",
+                    "send-text",
+                    "--pane-id",
+                    current_pane_id,
+                    setup_cmd + "\r",
+                ],
+                capture_output=True,
+                timeout=5,
+            )
+            time.sleep(0.3)
+            
+            # Step 2: Start Claude
+            claude_cmd = f"claude{' ' + claude_args if claude_args else ''}"
             subprocess.run(
                 [
                     wezterm_bin,
